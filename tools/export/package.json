@@ -5,6 +5,9 @@
   "description": "Development-time tools that export milsymbol data and reference SVGs for godot-milsymbol.",
   "license": "MIT",
   "type": "module",
+  "scripts": {
+    "golden": "node golden.mjs"
+  },
   "dependencies": {
     "milsymbol": "3.0.5"
   }

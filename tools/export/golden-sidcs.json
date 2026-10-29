@@ -1,0 +1,228 @@
+[
+  {
+    "id": "10011000000000000000",
+    "sidc": "10011000000000000000",
+    "options": {},
+    "description": "Unknown frame only, symbol set 10"
+  },
+  {
+    "id": "10031000000000000000",
+    "sidc": "10031000000000000000",
+    "options": {},
+    "description": "Friend frame only, symbol set 10"
+  },
+  {
+    "id": "10041000000000000000",
+    "sidc": "10041000000000000000",
+    "options": {},
+    "description": "Neutral frame only, symbol set 10"
+  },
+  {
+    "id": "10061000000000000000",
+    "sidc": "10061000000000000000",
+    "options": {},
+    "description": "Hostile frame only, symbol set 10"
+  },
+  {
+    "id": "10010100000000000000",
+    "sidc": "10010100000000000000",
+    "options": {},
+    "description": "Unknown frame only, symbol set 01"
+  },
+  {
+    "id": "10030100000000000000",
+    "sidc": "10030100000000000000",
+    "options": {},
+    "description": "Friend frame only, symbol set 01"
+  },
+  {
+    "id": "10040100000000000000",
+    "sidc": "10040100000000000000",
+    "options": {},
+    "description": "Neutral frame only, symbol set 01"
+  },
+  {
+    "id": "10060100000000000000",
+    "sidc": "10060100000000000000",
+    "options": {},
+    "description": "Hostile frame only, symbol set 01"
+  },
+  {
+    "id": "10013000000000000000",
+    "sidc": "10013000000000000000",
+    "options": {},
+    "description": "Unknown frame only, symbol set 30"
+  },
+  {
+    "id": "10033000000000000000",
+    "sidc": "10033000000000000000",
+    "options": {},
+    "description": "Friend frame only, symbol set 30"
+  },
+  {
+    "id": "10043000000000000000",
+    "sidc": "10043000000000000000",
+    "options": {},
+    "description": "Neutral frame only, symbol set 30"
+  },
+  {
+    "id": "10063000000000000000",
+    "sidc": "10063000000000000000",
+    "options": {},
+    "description": "Hostile frame only, symbol set 30"
+  },
+  {
+    "id": "10011000001211000000",
+    "sidc": "10011000001211000000",
+    "options": {},
+    "description": "Unknown land infantry"
+  },
+  {
+    "id": "10031000001211000000",
+    "sidc": "10031000001211000000",
+    "options": {},
+    "description": "Friend land infantry"
+  },
+  {
+    "id": "10041000001211000000",
+    "sidc": "10041000001211000000",
+    "options": {},
+    "description": "Neutral land infantry"
+  },
+  {
+    "id": "10061000001211000000",
+    "sidc": "10061000001211000000",
+    "options": {},
+    "description": "Hostile land infantry"
+  },
+  {
+    "id": "10030100001101000000",
+    "sidc": "10030100001101000000",
+    "options": {},
+    "description": "Friend air fixed wing"
+  },
+  {
+    "id": "10060100001101000000",
+    "sidc": "10060100001101000000",
+    "options": {},
+    "description": "Hostile air fixed wing"
+  },
+  {
+    "id": "10033000001200000000",
+    "sidc": "10033000001200000000",
+    "options": {},
+    "description": "Friend sea surface combatant"
+  },
+  {
+    "id": "10063000001200000000",
+    "sidc": "10063000001200000000",
+    "options": {},
+    "description": "Hostile sea surface combatant"
+  },
+  {
+    "id": "10031000121211000000",
+    "sidc": "10031000121211000000",
+    "options": {},
+    "description": "Friend infantry, echelon squad"
+  },
+  {
+    "id": "10031000141211000000",
+    "sidc": "10031000141211000000",
+    "options": {},
+    "description": "Friend infantry, echelon platoon"
+  },
+  {
+    "id": "10031000151211000000",
+    "sidc": "10031000151211000000",
+    "options": {},
+    "description": "Friend infantry, echelon company"
+  },
+  {
+    "id": "10031000161211000000",
+    "sidc": "10031000161211000000",
+    "options": {},
+    "description": "Friend infantry, echelon battalion"
+  },
+  {
+    "id": "10031000181211000000",
+    "sidc": "10031000181211000000",
+    "options": {},
+    "description": "Friend infantry, echelon brigade"
+  },
+  {
+    "id": "10031001001211000000",
+    "sidc": "10031001001211000000",
+    "options": {},
+    "description": "Friend infantry, feint/dummy"
+  },
+  {
+    "id": "10031002001211000000",
+    "sidc": "10031002001211000000",
+    "options": {},
+    "description": "Friend infantry, headquarters"
+  },
+  {
+    "id": "10031004001211000000",
+    "sidc": "10031004001211000000",
+    "options": {},
+    "description": "Friend infantry, task force"
+  },
+  {
+    "id": "10031006001211000000",
+    "sidc": "10031006001211000000",
+    "options": {},
+    "description": "Friend infantry, task force headquarters"
+  },
+  {
+    "id": "10031010001211000000",
+    "sidc": "10031010001211000000",
+    "options": {},
+    "description": "Friend infantry, planned"
+  },
+  {
+    "id": "10061010001211000000",
+    "sidc": "10061010001211000000",
+    "options": {},
+    "description": "Hostile infantry, planned"
+  },
+  {
+    "id": "10031000001211000000_dark",
+    "sidc": "10031000001211000000",
+    "options": {
+      "colorMode": "Dark"
+    },
+    "description": "Friend infantry, dark color mode"
+  },
+  {
+    "id": "10031000001211000000_medium",
+    "sidc": "10031000001211000000",
+    "options": {
+      "colorMode": "Medium"
+    },
+    "description": "Friend infantry, medium color mode"
+  },
+  {
+    "id": "10031000001211000000_nofill",
+    "sidc": "10031000001211000000",
+    "options": {
+      "fill": false
+    },
+    "description": "Friend infantry, unfilled"
+  },
+  {
+    "id": "10031000001211000000_size50",
+    "sidc": "10031000001211000000",
+    "options": {
+      "size": 50
+    },
+    "description": "Friend infantry, size 50"
+  },
+  {
+    "id": "10031000001211000000_outline3",
+    "sidc": "10031000001211000000",
+    "options": {
+      "outlineWidth": 3
+    },
+    "description": "Friend infantry, outline width 3"
+  }
+]

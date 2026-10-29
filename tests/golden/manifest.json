@@ -1,0 +1,480 @@
+[
+  {
+    "id": "10011000000000000000",
+    "sidc": "10011000000000000000",
+    "options": {},
+    "description": "Unknown frame only, symbol set 10",
+    "valid": true,
+    "width": 146.5,
+    "height": 146.5,
+    "anchor": {
+      "x": 73.25,
+      "y": 73.25
+    }
+  },
+  {
+    "id": "10031000000000000000",
+    "sidc": "10031000000000000000",
+    "options": {},
+    "description": "Friend frame only, symbol set 10",
+    "valid": true,
+    "width": 158,
+    "height": 108,
+    "anchor": {
+      "x": 79,
+      "y": 54
+    }
+  },
+  {
+    "id": "10041000000000000000",
+    "sidc": "10041000000000000000",
+    "options": {},
+    "description": "Neutral frame only, symbol set 10",
+    "valid": true,
+    "width": 118,
+    "height": 118,
+    "anchor": {
+      "x": 59,
+      "y": 59
+    }
+  },
+  {
+    "id": "10061000000000000000",
+    "sidc": "10061000000000000000",
+    "options": {},
+    "description": "Hostile frame only, symbol set 10",
+    "valid": true,
+    "width": 152,
+    "height": 152,
+    "anchor": {
+      "x": 76,
+      "y": 76
+    }
+  },
+  {
+    "id": "10010100000000000000",
+    "sidc": "10010100000000000000",
+    "options": {},
+    "description": "Unknown frame only, symbol set 01",
+    "valid": true,
+    "width": 158,
+    "height": 138,
+    "anchor": {
+      "x": 79,
+      "y": 84
+    }
+  },
+  {
+    "id": "10030100000000000000",
+    "sidc": "10030100000000000000",
+    "options": {},
+    "description": "Friend frame only, symbol set 01",
+    "valid": true,
+    "width": 118,
+    "height": 128,
+    "anchor": {
+      "x": 59,
+      "y": 74
+    }
+  },
+  {
+    "id": "10040100000000000000",
+    "sidc": "10040100000000000000",
+    "options": {},
+    "description": "Neutral frame only, symbol set 01",
+    "valid": true,
+    "width": 118,
+    "height": 128,
+    "anchor": {
+      "x": 59,
+      "y": 74
+    }
+  },
+  {
+    "id": "10060100000000000000",
+    "sidc": "10060100000000000000",
+    "options": {},
+    "description": "Hostile frame only, symbol set 01",
+    "valid": true,
+    "width": 118,
+    "height": 138,
+    "anchor": {
+      "x": 59,
+      "y": 84
+    }
+  },
+  {
+    "id": "10013000000000000000",
+    "sidc": "10013000000000000000",
+    "options": {},
+    "description": "Unknown frame only, symbol set 30",
+    "valid": true,
+    "width": 146.5,
+    "height": 146.5,
+    "anchor": {
+      "x": 73.25,
+      "y": 73.25
+    }
+  },
+  {
+    "id": "10033000000000000000",
+    "sidc": "10033000000000000000",
+    "options": {},
+    "description": "Friend frame only, symbol set 30",
+    "valid": true,
+    "width": 128,
+    "height": 128,
+    "anchor": {
+      "x": 64,
+      "y": 64
+    }
+  },
+  {
+    "id": "10043000000000000000",
+    "sidc": "10043000000000000000",
+    "options": {},
+    "description": "Neutral frame only, symbol set 30",
+    "valid": true,
+    "width": 118,
+    "height": 118,
+    "anchor": {
+      "x": 59,
+      "y": 59
+    }
+  },
+  {
+    "id": "10063000000000000000",
+    "sidc": "10063000000000000000",
+    "options": {},
+    "description": "Hostile frame only, symbol set 30",
+    "valid": true,
+    "width": 152,
+    "height": 152,
+    "anchor": {
+      "x": 76,
+      "y": 76
+    }
+  },
+  {
+    "id": "10011000001211000000",
+    "sidc": "10011000001211000000",
+    "options": {},
+    "description": "Unknown land infantry",
+    "valid": true,
+    "width": 146.5,
+    "height": 146.5,
+    "anchor": {
+      "x": 73.25,
+      "y": 73.25
+    }
+  },
+  {
+    "id": "10031000001211000000",
+    "sidc": "10031000001211000000",
+    "options": {},
+    "description": "Friend land infantry",
+    "valid": true,
+    "width": 158,
+    "height": 108,
+    "anchor": {
+      "x": 79,
+      "y": 54
+    }
+  },
+  {
+    "id": "10041000001211000000",
+    "sidc": "10041000001211000000",
+    "options": {},
+    "description": "Neutral land infantry",
+    "valid": true,
+    "width": 118,
+    "height": 118,
+    "anchor": {
+      "x": 59,
+      "y": 59
+    }
+  },
+  {
+    "id": "10061000001211000000",
+    "sidc": "10061000001211000000",
+    "options": {},
+    "description": "Hostile land infantry",
+    "valid": true,
+    "width": 152,
+    "height": 152,
+    "anchor": {
+      "x": 76,
+      "y": 76
+    }
+  },
+  {
+    "id": "10030100001101000000",
+    "sidc": "10030100001101000000",
+    "options": {},
+    "description": "Friend air fixed wing",
+    "valid": true,
+    "width": 118,
+    "height": 128,
+    "anchor": {
+      "x": 59,
+      "y": 74
+    }
+  },
+  {
+    "id": "10060100001101000000",
+    "sidc": "10060100001101000000",
+    "options": {},
+    "description": "Hostile air fixed wing",
+    "valid": true,
+    "width": 118,
+    "height": 138,
+    "anchor": {
+      "x": 59,
+      "y": 84
+    }
+  },
+  {
+    "id": "10033000001200000000",
+    "sidc": "10033000001200000000",
+    "options": {},
+    "description": "Friend sea surface combatant",
+    "valid": true,
+    "width": 128,
+    "height": 128,
+    "anchor": {
+      "x": 64,
+      "y": 64
+    }
+  },
+  {
+    "id": "10063000001200000000",
+    "sidc": "10063000001200000000",
+    "options": {},
+    "description": "Hostile sea surface combatant",
+    "valid": true,
+    "width": 152,
+    "height": 152,
+    "anchor": {
+      "x": 76,
+      "y": 76
+    }
+  },
+  {
+    "id": "10031000121211000000",
+    "sidc": "10031000121211000000",
+    "options": {},
+    "description": "Friend infantry, echelon squad",
+    "valid": true,
+    "width": 158,
+    "height": 135.5,
+    "anchor": {
+      "x": 79,
+      "y": 81.5
+    }
+  },
+  {
+    "id": "10031000141211000000",
+    "sidc": "10031000141211000000",
+    "options": {},
+    "description": "Friend infantry, echelon platoon",
+    "valid": true,
+    "width": 158,
+    "height": 135.5,
+    "anchor": {
+      "x": 79,
+      "y": 81.5
+    }
+  },
+  {
+    "id": "10031000151211000000",
+    "sidc": "10031000151211000000",
+    "options": {},
+    "description": "Friend infantry, echelon company",
+    "valid": true,
+    "width": 158,
+    "height": 148,
+    "anchor": {
+      "x": 79,
+      "y": 94
+    }
+  },
+  {
+    "id": "10031000161211000000",
+    "sidc": "10031000161211000000",
+    "options": {},
+    "description": "Friend infantry, echelon battalion",
+    "valid": true,
+    "width": 158,
+    "height": 148,
+    "anchor": {
+      "x": 79,
+      "y": 94
+    }
+  },
+  {
+    "id": "10031000181211000000",
+    "sidc": "10031000181211000000",
+    "options": {},
+    "description": "Friend infantry, echelon brigade",
+    "valid": true,
+    "width": 158,
+    "height": 148,
+    "anchor": {
+      "x": 79,
+      "y": 94
+    }
+  },
+  {
+    "id": "10031001001211000000",
+    "sidc": "10031001001211000000",
+    "options": {},
+    "description": "Friend infantry, feint/dummy",
+    "valid": true,
+    "width": 158,
+    "height": 183,
+    "anchor": {
+      "x": 79,
+      "y": 129
+    }
+  },
+  {
+    "id": "10031002001211000000",
+    "sidc": "10031002001211000000",
+    "options": {},
+    "description": "Friend infantry, headquarters",
+    "valid": true,
+    "width": 158,
+    "height": 208,
+    "anchor": {
+      "x": 4,
+      "y": 204
+    }
+  },
+  {
+    "id": "10031004001211000000",
+    "sidc": "10031004001211000000",
+    "options": {},
+    "description": "Friend infantry, task force",
+    "valid": true,
+    "width": 158,
+    "height": 148,
+    "anchor": {
+      "x": 79,
+      "y": 94
+    }
+  },
+  {
+    "id": "10031006001211000000",
+    "sidc": "10031006001211000000",
+    "options": {},
+    "description": "Friend infantry, task force headquarters",
+    "valid": true,
+    "width": 158,
+    "height": 248,
+    "anchor": {
+      "x": 4,
+      "y": 244
+    }
+  },
+  {
+    "id": "10031010001211000000",
+    "sidc": "10031010001211000000",
+    "options": {},
+    "description": "Friend infantry, planned",
+    "valid": true,
+    "width": 158,
+    "height": 108,
+    "anchor": {
+      "x": 79,
+      "y": 54
+    }
+  },
+  {
+    "id": "10061010001211000000",
+    "sidc": "10061010001211000000",
+    "options": {},
+    "description": "Hostile infantry, planned",
+    "valid": true,
+    "width": 152,
+    "height": 152,
+    "anchor": {
+      "x": 76,
+      "y": 76
+    }
+  },
+  {
+    "id": "10031000001211000000_dark",
+    "sidc": "10031000001211000000",
+    "options": {
+      "colorMode": "Dark"
+    },
+    "description": "Friend infantry, dark color mode",
+    "valid": true,
+    "width": 158,
+    "height": 108,
+    "anchor": {
+      "x": 79,
+      "y": 54
+    }
+  },
+  {
+    "id": "10031000001211000000_medium",
+    "sidc": "10031000001211000000",
+    "options": {
+      "colorMode": "Medium"
+    },
+    "description": "Friend infantry, medium color mode",
+    "valid": true,
+    "width": 158,
+    "height": 108,
+    "anchor": {
+      "x": 79,
+      "y": 54
+    }
+  },
+  {
+    "id": "10031000001211000000_nofill",
+    "sidc": "10031000001211000000",
+    "options": {
+      "fill": false
+    },
+    "description": "Friend infantry, unfilled",
+    "valid": true,
+    "width": 158,
+    "height": 108,
+    "anchor": {
+      "x": 79,
+      "y": 54
+    }
+  },
+  {
+    "id": "10031000001211000000_size50",
+    "sidc": "10031000001211000000",
+    "options": {
+      "size": 50
+    },
+    "description": "Friend infantry, size 50",
+    "valid": true,
+    "width": 79,
+    "height": 54,
+    "anchor": {
+      "x": 39.5,
+      "y": 27
+    }
+  },
+  {
+    "id": "10031000001211000000_outline3",
+    "sidc": "10031000001211000000",
+    "options": {
+      "outlineWidth": 3
+    },
+    "description": "Friend infantry, outline width 3",
+    "valid": true,
+    "width": 164,
+    "height": 114,
+    "anchor": {
+      "x": 82,
+      "y": 57
+    }
+  }
+]
