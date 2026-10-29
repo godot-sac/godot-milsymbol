@@ -1,0 +1,11 @@
+{
+  "name": "godot-milsymbol-export",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Development-time tools that export milsymbol data and reference SVGs for godot-milsymbol.",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "milsymbol": "3.0.5"
+  }
+}
