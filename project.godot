@@ -13,7 +13,14 @@ config_version=5
 config/name="godot-milsymbol"
 config/description="Demo and test project for the godot-milsymbol addon."
 config/features=PackedStringArray("4.7")
+run/main_scene="res://demo/frame_grid.tscn"
 
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/gut/plugin.cfg", "res://addons/milsymbol/plugin.cfg")
+
+[display]
+
+window/size/viewport_width=1600
+window/size/viewport_height=900
+window/stretch/mode="canvas_items"

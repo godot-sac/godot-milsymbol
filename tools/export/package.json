@@ -6,7 +6,8 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "golden": "node golden.mjs"
+    "golden": "node golden.mjs",
+    "data": "node data.mjs"
   },
   "dependencies": {
     "milsymbol": "3.0.5"

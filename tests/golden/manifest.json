@@ -476,5 +476,298 @@
       "x": 82,
       "y": 57
     }
+  },
+  {
+    "id": "10031000000000000000_dark",
+    "sidc": "10031000000000000000",
+    "options": {
+      "colorMode": "Dark"
+    },
+    "description": "Friend land frame, Dark color mode",
+    "valid": true,
+    "width": 158,
+    "height": 108,
+    "anchor": {
+      "x": 79,
+      "y": 54
+    }
+  },
+  {
+    "id": "10031000000000000000_medium",
+    "sidc": "10031000000000000000",
+    "options": {
+      "colorMode": "Medium"
+    },
+    "description": "Friend land frame, Medium color mode",
+    "valid": true,
+    "width": 158,
+    "height": 108,
+    "anchor": {
+      "x": 79,
+      "y": 54
+    }
+  },
+  {
+    "id": "10031000000000000000_nofill",
+    "sidc": "10031000000000000000",
+    "options": {
+      "fill": false
+    },
+    "description": "Friend land frame, unfilled",
+    "valid": true,
+    "width": 158,
+    "height": 108,
+    "anchor": {
+      "x": 79,
+      "y": 54
+    }
+  },
+  {
+    "id": "10031000000000000000_size50",
+    "sidc": "10031000000000000000",
+    "options": {
+      "size": 50
+    },
+    "description": "Friend land frame, size 50",
+    "valid": true,
+    "width": 79,
+    "height": 54,
+    "anchor": {
+      "x": 39.5,
+      "y": 27
+    }
+  },
+  {
+    "id": "10031000000000000000_outline3",
+    "sidc": "10031000000000000000",
+    "options": {
+      "outlineWidth": 3
+    },
+    "description": "Friend land frame, outline width 3",
+    "valid": true,
+    "width": 164,
+    "height": 114,
+    "anchor": {
+      "x": 82,
+      "y": 57
+    }
+  },
+  {
+    "id": "10031000000000000000_mono",
+    "sidc": "10031000000000000000",
+    "options": {
+      "monoColor": "rgb(0,0,128)"
+    },
+    "description": "Friend land frame, mono color",
+    "valid": true,
+    "width": 158,
+    "height": 108,
+    "anchor": {
+      "x": 79,
+      "y": 54
+    }
+  },
+  {
+    "id": "10031000000000000000_fillopacity",
+    "sidc": "10031000000000000000",
+    "options": {
+      "fillOpacity": 0.5
+    },
+    "description": "Friend land frame, fill opacity 0.5",
+    "valid": true,
+    "width": 158,
+    "height": 108,
+    "anchor": {
+      "x": 79,
+      "y": 54
+    }
+  },
+  {
+    "id": "10033000000000000000_nofill",
+    "sidc": "10033000000000000000",
+    "options": {
+      "fill": false
+    },
+    "description": "Friend sea frame (circle), unfilled",
+    "valid": true,
+    "width": 128,
+    "height": 128,
+    "anchor": {
+      "x": 64,
+      "y": 64
+    }
+  },
+  {
+    "id": "10033000000000000000_outline3",
+    "sidc": "10033000000000000000",
+    "options": {
+      "outlineWidth": 3
+    },
+    "description": "Friend sea frame (circle), outline 3",
+    "valid": true,
+    "width": 134,
+    "height": 134,
+    "anchor": {
+      "x": 67,
+      "y": 67
+    }
+  },
+  {
+    "id": "10031010000000000000",
+    "sidc": "10031010000000000000",
+    "options": {},
+    "description": "Friend land frame, planned",
+    "valid": true,
+    "width": 158,
+    "height": 108,
+    "anchor": {
+      "x": 79,
+      "y": 54
+    }
+  },
+  {
+    "id": "10061010000000000000",
+    "sidc": "10061010000000000000",
+    "options": {},
+    "description": "Hostile land frame, planned",
+    "valid": true,
+    "width": 152,
+    "height": 152,
+    "anchor": {
+      "x": 76,
+      "y": 76
+    }
+  },
+  {
+    "id": "10031010000000000000_nofill",
+    "sidc": "10031010000000000000",
+    "options": {
+      "fill": false
+    },
+    "description": "Friend land frame, planned, unfilled",
+    "valid": true,
+    "width": 158,
+    "height": 108,
+    "anchor": {
+      "x": 79,
+      "y": 54
+    }
+  },
+  {
+    "id": "10001000000000000000",
+    "sidc": "10001000000000000000",
+    "options": {},
+    "description": "Pending land frame",
+    "valid": true,
+    "width": 146.5,
+    "height": 146.5,
+    "anchor": {
+      "x": 73.25,
+      "y": 73.25
+    }
+  },
+  {
+    "id": "10021000000000000000",
+    "sidc": "10021000000000000000",
+    "options": {},
+    "description": "Assumed friend land frame",
+    "valid": true,
+    "width": 158,
+    "height": 108,
+    "anchor": {
+      "x": 79,
+      "y": 54
+    }
+  },
+  {
+    "id": "10051000000000000000",
+    "sidc": "10051000000000000000",
+    "options": {},
+    "description": "Suspect land frame",
+    "valid": true,
+    "width": 152,
+    "height": 152,
+    "anchor": {
+      "x": 76,
+      "y": 76
+    }
+  },
+  {
+    "id": "10031500000000000000",
+    "sidc": "10031500000000000000",
+    "options": {},
+    "description": "Friend land equipment frame",
+    "valid": true,
+    "width": 128,
+    "height": 128,
+    "anchor": {
+      "x": 64,
+      "y": 64
+    }
+  },
+  {
+    "id": "10032700000000000000",
+    "sidc": "10032700000000000000",
+    "options": {},
+    "description": "Friend dismounted individual frame",
+    "valid": true,
+    "width": 118,
+    "height": 118,
+    "anchor": {
+      "x": 59,
+      "y": 59
+    }
+  },
+  {
+    "id": "10030500000000000000",
+    "sidc": "10030500000000000000",
+    "options": {},
+    "description": "Friend space frame",
+    "valid": true,
+    "width": 118,
+    "height": 128,
+    "anchor": {
+      "x": 59,
+      "y": 74
+    }
+  },
+  {
+    "id": "10060500000000000000",
+    "sidc": "10060500000000000000",
+    "options": {},
+    "description": "Hostile space frame",
+    "valid": true,
+    "width": 118,
+    "height": 138,
+    "anchor": {
+      "x": 59,
+      "y": 84
+    }
+  },
+  {
+    "id": "10033500000000000000",
+    "sidc": "10033500000000000000",
+    "options": {},
+    "description": "Friend subsurface frame",
+    "valid": true,
+    "width": 118,
+    "height": 128,
+    "anchor": {
+      "x": 59,
+      "y": 54
+    }
+  },
+  {
+    "id": "10063500000000000000",
+    "sidc": "10063500000000000000",
+    "options": {},
+    "description": "Hostile subsurface frame",
+    "valid": true,
+    "width": 118,
+    "height": 138,
+    "anchor": {
+      "x": 59,
+      "y": 54
+    }
   }
 ]

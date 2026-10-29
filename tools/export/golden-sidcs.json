@@ -224,5 +224,151 @@
       "outlineWidth": 3
     },
     "description": "Friend infantry, outline width 3"
+  },
+  {
+    "id": "10031000000000000000_dark",
+    "sidc": "10031000000000000000",
+    "options": {
+      "colorMode": "Dark"
+    },
+    "description": "Friend land frame, Dark color mode"
+  },
+  {
+    "id": "10031000000000000000_medium",
+    "sidc": "10031000000000000000",
+    "options": {
+      "colorMode": "Medium"
+    },
+    "description": "Friend land frame, Medium color mode"
+  },
+  {
+    "id": "10031000000000000000_nofill",
+    "sidc": "10031000000000000000",
+    "options": {
+      "fill": false
+    },
+    "description": "Friend land frame, unfilled"
+  },
+  {
+    "id": "10031000000000000000_size50",
+    "sidc": "10031000000000000000",
+    "options": {
+      "size": 50
+    },
+    "description": "Friend land frame, size 50"
+  },
+  {
+    "id": "10031000000000000000_outline3",
+    "sidc": "10031000000000000000",
+    "options": {
+      "outlineWidth": 3
+    },
+    "description": "Friend land frame, outline width 3"
+  },
+  {
+    "id": "10031000000000000000_mono",
+    "sidc": "10031000000000000000",
+    "options": {
+      "monoColor": "rgb(0,0,128)"
+    },
+    "description": "Friend land frame, mono color"
+  },
+  {
+    "id": "10031000000000000000_fillopacity",
+    "sidc": "10031000000000000000",
+    "options": {
+      "fillOpacity": 0.5
+    },
+    "description": "Friend land frame, fill opacity 0.5"
+  },
+  {
+    "id": "10033000000000000000_nofill",
+    "sidc": "10033000000000000000",
+    "options": {
+      "fill": false
+    },
+    "description": "Friend sea frame (circle), unfilled"
+  },
+  {
+    "id": "10033000000000000000_outline3",
+    "sidc": "10033000000000000000",
+    "options": {
+      "outlineWidth": 3
+    },
+    "description": "Friend sea frame (circle), outline 3"
+  },
+  {
+    "id": "10031010000000000000",
+    "sidc": "10031010000000000000",
+    "options": {},
+    "description": "Friend land frame, planned"
+  },
+  {
+    "id": "10061010000000000000",
+    "sidc": "10061010000000000000",
+    "options": {},
+    "description": "Hostile land frame, planned"
+  },
+  {
+    "id": "10031010000000000000_nofill",
+    "sidc": "10031010000000000000",
+    "options": {
+      "fill": false
+    },
+    "description": "Friend land frame, planned, unfilled"
+  },
+  {
+    "id": "10001000000000000000",
+    "sidc": "10001000000000000000",
+    "options": {},
+    "description": "Pending land frame"
+  },
+  {
+    "id": "10021000000000000000",
+    "sidc": "10021000000000000000",
+    "options": {},
+    "description": "Assumed friend land frame"
+  },
+  {
+    "id": "10051000000000000000",
+    "sidc": "10051000000000000000",
+    "options": {},
+    "description": "Suspect land frame"
+  },
+  {
+    "id": "10031500000000000000",
+    "sidc": "10031500000000000000",
+    "options": {},
+    "description": "Friend land equipment frame"
+  },
+  {
+    "id": "10032700000000000000",
+    "sidc": "10032700000000000000",
+    "options": {},
+    "description": "Friend dismounted individual frame"
+  },
+  {
+    "id": "10030500000000000000",
+    "sidc": "10030500000000000000",
+    "options": {},
+    "description": "Friend space frame"
+  },
+  {
+    "id": "10060500000000000000",
+    "sidc": "10060500000000000000",
+    "options": {},
+    "description": "Hostile space frame"
+  },
+  {
+    "id": "10033500000000000000",
+    "sidc": "10033500000000000000",
+    "options": {},
+    "description": "Friend subsurface frame"
+  },
+  {
+    "id": "10063500000000000000",
+    "sidc": "10063500000000000000",
+    "options": {},
+    "description": "Hostile subsurface frame"
   }
 ]
