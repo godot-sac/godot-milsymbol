@@ -193,3 +193,35 @@ With `fill: false` / `monoColor` the frame and icon take the affiliation color i
 </svg>
 ```
 bbox `{x1:25, y1:22.5, x2:175, y2:150}` (echelon dots raise y1 above the frame), anchor `(79, 81.5)`.
+
+## 8. Exported icon data (`addons/milsymbol/data/icons_<symbolset>.json`)
+
+Written by `tools/export/icons.mjs`, read by `addons/milsymbol/icons.gd`.
+
+```jsonc
+{
+  "milsymbol": "3.0.5",
+  "symbolSet": "10",
+  "tables": {
+    "D": {
+      "main": { "121100": [{ "$ref": "GR.IC.FF.INFANTRY" }], ... },   // entity code -> instructions
+      "m1":   { "01": [...] }, "m2": { ... },                          // modifier 1 / 2 codes
+      "bbox": { "<entity>": { "x1": .., "y1": .., "x2": .., "y2": .. } } // icons that extend the bbox
+    },
+    "E": "D"            // or a full table when 2525E differs
+  },
+  "parts": {
+    "GR.IC.MILITARY": { "value": <instructions> },                    // same for every variant
+    "GR.IC.FF.INFANTRY": {                                            // differs by variant
+      "values": [<instructions>, <instructions>],
+      "variants": { "Friend|1|0|D": 1, "Unknown|1|0|D": 0, ... }      // affiliation|frame|mono|edition -> index
+    }
+  }
+}
+```
+
+- Instructions use the format of §3. `{"$ref": name}` points to another part.
+- Colors are placeholders: `"@iconColor"` = `colors.iconColor[affiliation]`, `"@fillColor.Unknown"` =
+  `colors.fillColor.Unknown`, `"@mono"` = `style.monoColor`. `@none` resolves to `false` (no paint).
+- Text instructions carry an extra `"d"`: the label outlined with Arimo (`tools/export/text-to-path.mjs`).
+  With `textMode: "path"` (default) the renderer draws that path, because Godot's SVG loader ignores `<text>`.

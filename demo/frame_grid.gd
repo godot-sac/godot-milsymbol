@@ -47,7 +47,7 @@ func _build_ui() -> void:
 	margin.add_child(root)
 
 	var title := Label.new()
-	title.text = "godot-milsymbol — Phase 2: frames"
+	title.text = "godot-milsymbol — Frames"
 	title.add_theme_font_size_override("font_size", 22)
 	root.add_child(title)
 

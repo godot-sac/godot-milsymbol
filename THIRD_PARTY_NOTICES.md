@@ -44,3 +44,23 @@ The MIT License (MIT)
 
 Copyright (c) 2018 Tom "Butch" Wesley
 ```
+
+## Arimo font (glyph outlines in exported icon data)
+
+Icon text labels in `addons/milsymbol/data/icons_*.json` are stored as vector outlines generated from
+the Arimo font. The font itself is not distributed; it is a development dependency of `tools/export/`.
+
+- Source: https://github.com/googlefonts/arimo (via npm `@fontsource/arimo` 5.3.0)
+- License: SIL Open Font License 1.1
+
+```
+Copyright 2020 The Arimo Project Authors (https://github.com/googlefonts/arimo)
+```
+
+## opentype.js — development only
+
+Used by `tools/export/text-to-path.mjs` to read glyph outlines. Not distributed.
+
+- Source: https://github.com/opentypejs/opentype.js
+- Version: 2.0.0
+- License: MIT, Copyright (c) 2020 Frederik De Bleser

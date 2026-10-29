@@ -7,9 +7,15 @@
   "type": "module",
   "scripts": {
     "golden": "node golden.mjs",
-    "data": "node data.mjs"
+    "data": "node data.mjs",
+    "icons": "node icons.mjs",
+    "golden:bulk": "node golden-bulk.mjs"
   },
   "dependencies": {
     "milsymbol": "3.0.5"
+  },
+  "devDependencies": {
+    "@fontsource/arimo": "5.3.0",
+    "opentype.js": "2.0.0"
   }
 }

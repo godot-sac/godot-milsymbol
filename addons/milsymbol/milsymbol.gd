@@ -6,7 +6,7 @@ extends RefCounted
 ##   var render := MilSymbol.render("10061000000000000000")  # SVG, size, anchor, metadata
 ##
 ## Port of milsymbol 3.0.5 (src/ms/symbol/setoptions.js and the symbol parts in src/symbolfunctions/).
-## Phase 2: frames only (base geometry, colors, outline, dashed "not present" frames).
+## Implemented parts: frame (base geometry) and icon. Modifiers come in Phase 4.
 
 const DATA_DIR := "res://addons/milsymbol/data/"
 
@@ -34,9 +34,26 @@ const STYLE_DEFAULTS := {
 	"standard": "",
 	"strokeWidth": 4.0,
 	"styleFill": false,
+	# Not in milsymbol: "path" draws icon labels as outlines (Godot's SVG loader has no text support),
+	# "svg" writes <text> elements exactly like milsymbol does.
+	"textMode": "path",
 }
 
 const AFFILIATIONS := ["Civilian", "Friend", "Hostile", "Neutral", "Unknown", "Suspect"]
+
+## Drawn when an entity code has no icon (src/symbolfunctions/icon.js).
+const UNDEFINED_ICON_D := "m 94.8206,78.1372 c -0.4542,6.8983 0.6532,14.323 5.3424,19.6985 4.509,5.6933 11.309,9.3573 14.98,15.7283 3.164,6.353 -0.09,14.245 -5.903,17.822 -7.268,4.817 -18.6219,2.785 -22.7328,-5.249 -1.5511,-2.796 -2.3828,-5.931 -2.8815,-9.071 -3.5048,0.416 -7.0093,0.835 -10.5142,1.252 0.8239,8.555 5.2263,17.287 13.2544,21.111 7.8232,3.736 17.1891,3.783 25.3291,1.052 8.846,-3.103 15.737,-11.958 15.171,-21.537 0.05,-6.951 -4.272,-12.85 -9.134,-17.403 -4.526,-4.6949 -11.048,-8.3862 -12.401,-15.2748 -1.215,-2.3639 -0.889,-8.129 -0.889,-8.129 z m -0.6253,-20.5177 0,11.6509 11.6527,0 0,-11.6509 z"
+## Entity codes in symbol set 15 (land equipment) whose icon is not scaled for modifiers.
+const EQUIPMENT_NO_SCALE := [130100, 170000, 170400, 170600, 170700, 170800, 170900, 171100, 200200, 200300,
+	200600, 200700, 200800, 200900, 201100, 201301, 201302, 201400, 210100, 210200, 210300, 210400,
+	210500, 230200, 250000]
+## Parts added for entity subtypes 95-98.
+const SUBTYPE_PARTS := {
+	"95": "GR.IC.FF.HEADQUARTERS OR HEADQUARTERS ELEMENT",
+	"96": "GR.IC.FF.DIVISION AND BELOW SUPPORT",
+	"97": "GR.IC.FF.CORPS SUPPORT",
+	"98": "GR.IC.FF.THEATRE SUPPORT",
+}
 
 ## Frame marks for space, activity and cyberspace symbol sets (src/symbolfunctions/basegeometry.js).
 const SPACE_MARKS := {
@@ -80,6 +97,7 @@ static func render(sidc: String, options: Dictionary = {}) -> MilSymbolRender:
 	var metadata := MilSymbolSidc.decode(sidc, style, _dash_arrays)
 	metadata.baseGeometry = _base_geometry(metadata, style)
 	var colors := _get_colors(metadata, style)
+	var state := {"valid_icon": true}
 
 	var result := MilSymbolRender.new()
 	result.sidc = sidc
@@ -91,6 +109,7 @@ static func render(sidc: String, options: Dictionary = {}) -> MilSymbolRender:
 	# Symbol parts in milsymbol's order: pre is drawn underneath everything so far, post on top.
 	var parts: Array[Dictionary] = [
 		_part_base_geometry(metadata, style, colors),
+		_part_icon(sidc, metadata, style, colors, state),
 	]
 	for m in parts:
 		var pre: Array = m.pre
@@ -126,7 +145,7 @@ static func render(sidc: String, options: Dictionary = {}) -> MilSymbolRender:
 	result.size = base_size * scale
 	result.anchor = (anchor - Vector2(bbox.x1, bbox.y1) + Vector2(margin, margin)) * scale
 	result.draw_instructions = instructions
-	result.valid = _is_valid(metadata)
+	result.valid = _is_valid(metadata) and state.valid_icon and not _contains_null(instructions)
 	var view_box := Rect2(bbox.x1 - margin, bbox.y1 - margin, base_size.x, base_size.y)
 	result.svg = MilSymbolSvgWriter.write(instructions, style, view_box, result.size)
 	return result
@@ -173,6 +192,20 @@ static func _is_valid(metadata: Dictionary) -> bool:
 	if metadata.mobility == null:
 		return false
 	return not metadata.baseGeometry.g.is_empty()
+
+
+static func _contains_null(value: Variant) -> bool:
+	if value == null:
+		return true
+	if value is Array:
+		for item in value:
+			if _contains_null(item):
+				return true
+	elif value is Dictionary:
+		for key in value:
+			if _contains_null(value[key]):
+				return true
+	return false
 
 
 static func _merge_bbox(bbox: Dictionary, other: Dictionary) -> void:
@@ -310,6 +343,100 @@ static func _part_base_geometry(metadata: Dictionary, style: Dictionary, colors:
 	return {"pre": pre, "post": post, "bbox": base.bbox}
 
 
+## Main icon, modifier 1 and modifier 2 (src/symbolfunctions/icon.js, number based SIDCs).
+static func _part_icon(sidc: String, metadata: Dictionary, style: Dictionary, colors: Dictionary,
+		state: Dictionary) -> Dictionary:
+	var pre: Array = []
+	var post: Array = []
+	var bbox := {"x1": 50.0, "y1": 50.0, "x2": 150.0, "y2": 150.0}
+	if style.icon and metadata.numberSIDC:
+		var symbol_set := sidc.substr(4, 2)
+		var tables := MilSymbolIcons.get_tables(symbol_set, metadata.get("edition", "D"))
+		var context := MilSymbolIcons.make_context(symbol_set, metadata, style, colors)
+		var main_table: Dictionary = tables.get("main", {})
+		var functionid: String = metadata.functionid
+		var main_code := functionid.substr(0, 6)
+		var subtype := functionid.substr(4, 2)
+
+		var main_entry = main_table.get(main_code)
+		if main_entry == null and subtype.to_int() >= 95:
+			main_entry = main_table.get(functionid.substr(0, 4) + "00")
+		if main_entry == null:
+			if main_code != "000000" and main_code != "":
+				post.append([{"type": "path", "stroke": false,
+						"fill": colors.iconColor.get(metadata.affiliation, false), "d": UNDEFINED_ICON_D}])
+				state.valid_icon = false
+		else:
+			var main_icon = MilSymbolIcons.resolve(main_entry, context)
+			var code := main_code.to_int()
+			if ((symbol_set == "27" and code >= 110301 and code <= 110403)
+					or (symbol_set == "15" and not code in EQUIPMENT_NO_SCALE)):
+				var has_m1: bool = metadata._modifier1 != "000"
+				var has_m2: bool = metadata._modifier2 != "000"
+				if has_m1 and has_m2:
+					main_icon = [_scale(0.45, main_icon, true)]
+				elif has_m2:
+					main_icon = [_translate(0, -10, _scale(0.7, main_icon, true))]
+				elif has_m1:
+					main_icon = [_translate(0, 10, _scale(0.7, main_icon, true))]
+				else:
+					main_icon = [_scale(1, main_icon, true)]
+			post.append(main_icon)
+
+		var special_bbox: Dictionary = tables.get("bbox", {})
+		if special_bbox.has(main_code):
+			var b: Dictionary = special_bbox[main_code]
+			bbox = {"x1": float(b.get("x1", 100)), "y1": float(b.get("y1", 100)),
+					"x2": float(b.get("x2", 100)), "y2": float(b.get("y2", 100))}
+		if SUBTYPE_PARTS.has(subtype):
+			post.append(MilSymbolIcons.resolve_part(SUBTYPE_PARTS[subtype], context))
+
+		for modifier in [["m1", metadata._modifier1, functionid.substr(6, 2)],
+				["m2", metadata._modifier2, functionid.substr(8, 2)]]:
+			var table: Dictionary = tables.get(modifier[0], {})
+			var code_in_sidc: String = modifier[1]
+			var code: String = modifier[2] if code_in_sidc.substr(0, 1) == "0" else code_in_sidc
+			if code_in_sidc.substr(0, 1) == "0" and code == "00":
+				continue
+			if table.has(code):
+				post.append(MilSymbolIcons.resolve(table[code], context))
+			else:
+				state.valid_icon = false
+
+	if (not (style.frame and metadata.fill) or style.monoColor != "" or metadata.get("controlMeasure", false)) 			and style.outlineWidth > 0:
+		var outline_color = style.outlineColor
+		if outline_color is Dictionary:
+			outline_color = outline_color.get(metadata.affiliation)
+		pre.append(_outline(post, style.outlineWidth, style.strokeWidth, outline_color))
+	return {"pre": pre, "post": post, "bbox": bbox}
+
+
+## Scales an instruction around (100, 100) (ms._scale in src/ms.js).
+static func _scale(factor: float, instruction: Variant, non_scaling_stroke: bool) -> Dictionary:
+	if non_scaling_stroke:
+		_set_non_scaling_stroke(instruction, factor)
+	return {"type": "translate", "x": 100 - factor * 100, "y": 100 - factor * 100,
+			"draw": [{"type": "scale", "factor": factor, "draw": [instruction]}]}
+
+
+static func _set_non_scaling_stroke(instruction: Variant, factor: float) -> void:
+	if instruction is Array:
+		for item in instruction:
+			if item is Dictionary:
+				item.non_scaling_stroke = 1.0 / factor
+				if item.has("draw"):
+					_set_non_scaling_stroke(item.draw, factor)
+			elif item is Array:
+				for child in item:
+					_set_non_scaling_stroke(child, factor)
+	elif instruction is Dictionary:
+		instruction.non_scaling_stroke = 1.0 / factor
+
+
+static func _translate(x: float, y: float, instruction: Variant) -> Dictionary:
+	return {"type": "translate", "x": x, "y": y, "draw": [instruction]}
+
+
 static func _clone_geometry(g: Dictionary) -> Dictionary:
 	var geom := {"type": g.type}
 	match g.type:
@@ -324,6 +451,8 @@ static func _clone_geometry(g: Dictionary) -> Dictionary:
 
 ## Wider stroke-only copy drawn under a shape (src/ms/outline.js).
 static func _outline(geom: Variant, outline: float, stroke: float, color: Variant) -> Variant:
+	if geom == null:
+		return null
 	if geom is Array:
 		var list: Array = []
 		for item in geom:
