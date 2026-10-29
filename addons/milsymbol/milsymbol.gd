@@ -39,6 +39,9 @@ const STYLE_DEFAULTS := {
 	# Not in milsymbol: "path" draws icon labels as outlines (Godot's SVG loader has no text support),
 	# "svg" writes <text> elements exactly like milsymbol does.
 	"textMode": "path",
+	# Not in milsymbol: true reproduces known milsymbol 3.0.5 drawing bugs exactly (golden tests use it).
+	# See docs/draw-instructions.md, "Known milsymbol 3.0.5 quirks".
+	"milsymbolQuirks": false,
 }
 
 const AFFILIATIONS := ["Civilian", "Friend", "Hostile", "Neutral", "Unknown", "Suspect"]
@@ -150,6 +153,10 @@ static var _color_modes: Dictionary
 static var _dash_arrays: Dictionary
 static var _hq_staff_length: float
 
+## Maximum number of cached renders; the oldest entries are dropped first.
+static var cache_limit: int = 1024
+static var _cache: Dictionary = {}  # key -> {"render": MilSymbolRender, "textures": {scale: ImageTexture}}
+
 
 ## Renders a symbol. `options` takes milsymbol option names (size, colorMode, fill, frame, outlineWidth, ...).
 static func render(sidc: String, options: Dictionary = {}) -> MilSymbolRender:
@@ -230,9 +237,51 @@ static func render(sidc: String, options: Dictionary = {}) -> MilSymbolRender:
 	return result
 
 
-## Shortcut for render(sidc, options).to_texture().
-static func create_texture(sidc: String, options: Dictionary = {}) -> ImageTexture:
-	return render(sidc, options).to_texture()
+## Cached render(): the same SIDC and options (in any key order) return the same object.
+static func render_cached(sidc: String, options: Dictionary = {}) -> MilSymbolRender:
+	return _cache_entry(sidc, options).render
+
+
+## Cached texture for a symbol. Returns the same ImageTexture for the same SIDC, options and scale.
+## Returns null if Godot cannot rasterize the SVG.
+static func create_texture(sidc: String, options: Dictionary = {}, scale: float = 1.0) -> ImageTexture:
+	var entry := _cache_entry(sidc, options)
+	var textures: Dictionary = entry.textures
+	if not textures.has(scale):
+		textures[scale] = entry.render.to_texture(scale)
+	return textures[scale]
+
+
+static func clear_cache() -> void:
+	_cache.clear()
+
+
+static func cache_size() -> int:
+	return _cache.size()
+
+
+static func _cache_entry(sidc: String, options: Dictionary) -> Dictionary:
+	var key := sidc + "|" + _options_key(options)
+	if _cache.has(key):
+		# Move to the end so the least recently used entry is first.
+		var hit: Dictionary = _cache[key]
+		_cache.erase(key)
+		_cache[key] = hit
+		return hit
+	var entry := {"render": render(sidc, options), "textures": {}}
+	_cache[key] = entry
+	while _cache.size() > maxi(cache_limit, 1):
+		_cache.erase(_cache.keys()[0])
+	return entry
+
+
+static func _options_key(options: Dictionary) -> String:
+	var keys := options.keys()
+	keys.sort()
+	var parts := PackedStringArray()
+	for key in keys:
+		parts.append("%s=%s" % [key, var_to_str(options[key])])
+	return ",".join(parts)
 
 
 static func _ensure_data() -> void:
@@ -603,8 +652,9 @@ static func _part_modifier(metadata: Dictionary, style: Dictionary, colors: Dict
 				g.cssClass = "milsymbol-echelon milsymbol-echelon-fill"
 			geom.append(g)
 		if style.outlineWidth > 0:
-			# milsymbol translates the outline by -padding only, not by the frame top (kept for parity).
-			pre.append(_outline({"type": "translate", "x": 0, "y": -padding, "draw": geom},
+			# milsymbol translates the echelon outline by -padding only, so it lands above the frame.
+			var outline_y: float = -padding if style.milsymbolQuirks else bbox.y1 - padding
+			pre.append(_outline({"type": "translate", "x": 0, "y": outline_y, "draw": geom},
 					style.outlineWidth, style.strokeWidth, outline_color))
 		post.append({"type": "translate", "x": 0, "y": bbox.y1 - padding, "draw": geom})
 		var eb: Dictionary = echelon.bbox

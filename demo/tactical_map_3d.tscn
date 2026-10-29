@@ -1,0 +1,47 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://demo/tactical_map_3d.gd" id="1"]
+
+[node name="TacticalMap3D" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1")
+
+[node name="ViewContainer" type="SubViewportContainer" parent="."]
+clip_contents = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+stretch = true
+
+[node name="Viewport" type="SubViewport" parent="ViewContainer"]
+handle_input_locally = false
+msaa_3d = 2
+size = Vector2i(1152, 648)
+render_target_update_mode = 4
+
+[node name="World" type="Node3D" parent="ViewContainer/Viewport"]
+
+[node name="Units" type="Node3D" parent="ViewContainer/Viewport/World"]
+
+[node name="Camera3D" type="Camera3D" parent="ViewContainer/Viewport"]
+fov = 65.0
+far = 1000.0
+
+[node name="Sun" type="DirectionalLight3D" parent="ViewContainer/Viewport"]
+transform = Transform3D(0.866, -0.25, 0.433, 0, 0.866, 0.5, -0.5, -0.433, 0.75, 0, 40, 0)
+shadow_enabled = true
+
+[node name="Panel" type="PanelContainer" parent="."]
+layout_mode = 1
+offset_left = 12.0
+offset_top = 12.0
+offset_right = 282.0
+offset_bottom = 12.0

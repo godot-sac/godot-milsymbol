@@ -28,7 +28,7 @@ func test_every_icon_matches_milsymbol() -> void:
 	var failures := PackedStringArray()
 	var failed := 0
 	for entry in _entries:
-		var render := MilSymbol.render(entry.sidc, entry.options.merged({"textMode": "svg"}))
+		var render := MilSymbol.render(entry.sidc, entry.options.merged({"textMode": "svg", "milsymbolQuirks": true}))
 		var problems := SvgCompare.diff(entry.svg, render.svg)
 		if render.valid != entry.valid:
 			problems.append("valid %s != %s" % [render.valid, entry.valid])
@@ -48,7 +48,7 @@ func test_text_labels_render_as_paths_by_default() -> void:
 	# Liaison (LO) is a text-only icon; ThorVG ignores <text>, so the default mode must use outlines.
 	var sidc := "10031000001105000000"
 	var as_path := MilSymbol.render(sidc)
-	var as_text := MilSymbol.render(sidc, {"textMode": "svg"})
+	var as_text := MilSymbol.render(sidc, {"textMode": "svg", "milsymbolQuirks": true})
 	assert_false(as_path.svg.contains("<text"))
 	assert_true(as_text.svg.contains("<text"))
 	var frame_only := SvgCompare.rasterize(MilSymbol.render("10031000000000000000").svg)

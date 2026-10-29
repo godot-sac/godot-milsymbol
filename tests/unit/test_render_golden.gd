@@ -4,8 +4,8 @@ extends GutTest
 const SvgCompare = preload("res://tests/helpers/svg_compare.gd")
 const GOLDEN_DIR := "res://tests/golden/"
 
-## Goldens are written by milsymbol with <text> labels, so compare in "svg" text mode.
-const TEXT_MODE := {"textMode": "svg"}
+## Goldens are written by milsymbol with <text> labels and its known quirks, so compare in that mode.
+const TEXT_MODE := {"textMode": "svg", "milsymbolQuirks": true}
 
 var _manifest: Array = []
 

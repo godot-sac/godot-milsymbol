@@ -1,8 +1,10 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://demo/main.gd" id="1"]
 [ext_resource type="PackedScene" path="res://demo/frame_grid.tscn" id="2"]
 [ext_resource type="PackedScene" path="res://demo/icon_browser.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://demo/tactical_map_2d.tscn" id="4"]
+[ext_resource type="PackedScene" path="res://demo/tactical_map_3d.tscn" id="5"]
 
 [node name="Main" type="TabContainer"]
 anchors_preset = 15
@@ -11,10 +13,19 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1")
+current_tab = 2
 
 [node name="Frames" parent="." instance=ExtResource("2")]
+visible = false
 layout_mode = 2
 
 [node name="Icons" parent="." instance=ExtResource("3")]
+visible = false
+layout_mode = 2
+
+[node name="Map 2D" parent="." instance=ExtResource("4")]
+layout_mode = 2
+
+[node name="Map 3D" parent="." instance=ExtResource("5")]
 visible = false
 layout_mode = 2
