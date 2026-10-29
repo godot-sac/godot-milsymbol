@@ -8,6 +8,21 @@ const EDITION_NAMES: Array[String] = ["2525D", "2525E"]
 const EDITION_VERSIONS: Array[String] = ["10", "13"]
 const IDENTITY_NAMES: Array[String] = ["Unknown", "Friend", "Neutral", "Hostile"]
 const IDENTITY_CODES: Array[String] = ["1", "3", "4", "6"]
+const CONTEXT_NAMES: Array[String] = ["Reality", "Exercise", "Simulation"]
+const DETAIL_STATUS_NAMES: Array[String] = [
+	"Present", "Planned", "Fully capable", "Damaged", "Destroyed", "Full to capacity"]
+const HQ_NAMES: Array[String] = [
+	"None", "Feint/Dummy", "Headquarters", "Feint/Dummy + HQ", "Task force",
+	"Feint/Dummy + TF", "TF + HQ", "Feint/Dummy + TF + HQ"]
+const ECHELONS: Array[String] = [
+	"11 Team/Crew", "12 Squad", "13 Section", "14 Platoon/Detachment", "15 Company/Battery/Troop",
+	"16 Battalion/Squadron", "17 Regiment/Group", "18 Brigade", "21 Division", "22 Corps/MEF",
+	"23 Army", "24 Army Group/Front", "25 Region/Theater", "26 Command"]
+const MOBILITY: Array[String] = [
+	"31 Wheeled limited cross country", "32 Wheeled cross country", "33 Tracked",
+	"34 Wheeled and tracked", "35 Towed", "36 Rail", "37 Pack animals", "41 Over snow", "42 Sled",
+	"51 Barge", "52 Amphibious", "61 Short towed array", "62 Long towed array"]
+const DEFAULT_ENTITY: String = "121100"
 const CARD_WIDTH: float = 150.0
 const THUMB_SIZE: float = 110.0
 const DEBOUNCE_SEC: float = 0.15
@@ -34,6 +49,12 @@ var _m1_opt: OptionButton
 var _m2_opt: OptionButton
 var _sidc_edit: LineEdit
 var _preview_row: HBoxContainer
+var _context_opt: OptionButton
+var _detail_status_opt: OptionButton
+var _hq_opt: OptionButton
+var _amp_opt: OptionButton
+var _show_anchor: CheckBox
+var _hq_staff: SpinBox
 var _selected_label: Label
 var _preview_render: MilSymbolRender  # Render of the current identity, used by Copy SVG.
 
@@ -167,12 +188,46 @@ func _build_ui() -> void:
 
 	var preview_bg := ColorRect.new()
 	preview_bg.color = Color(0.2, 0.22, 0.25)
-	preview_bg.custom_minimum_size = Vector2(0, 150)
+	preview_bg.custom_minimum_size = Vector2(0, 220)
 	panel.add_child(preview_bg)
 	_preview_row = HBoxContainer.new()
 	_preview_row.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_preview_row.add_theme_constant_override("separation", 0)
 	preview_bg.add_child(_preview_row)
+
+	# Preview-only settings; the grid cards stay plain.
+	_context_opt = _option(CONTEXT_NAMES, 1)
+	_context_opt.item_selected.connect(_on_modifier_changed)
+	panel.add_child(_labeled("Context", _context_opt))
+	_detail_status_opt = _option(DETAIL_STATUS_NAMES, 2)
+	_detail_status_opt.item_selected.connect(_on_modifier_changed)
+	panel.add_child(_labeled("Status", _detail_status_opt))
+	_hq_opt = _option(HQ_NAMES, 6)
+	_hq_opt.item_selected.connect(_on_modifier_changed)
+	panel.add_child(_labeled("HQ/TF/Dummy", _hq_opt))
+	_amp_opt = OptionButton.new()
+	_amp_opt.fit_to_longest_item = false
+	_amp_opt.clip_text = true
+	_amp_opt.add_item("00 None")
+	_amp_opt.set_item_metadata(0, "00")
+	_amp_opt.add_separator("Echelon")
+	_add_amplifiers(ECHELONS)
+	_amp_opt.add_separator("Mobility")
+	_add_amplifiers(MOBILITY)
+	_amp_opt.selected = 7  # 16 Battalion/Squadron
+	_amp_opt.item_selected.connect(_on_modifier_changed)
+	panel.add_child(_labeled("Amplifier", _amp_opt))
+	_show_anchor = CheckBox.new()
+	_show_anchor.text = "Show anchor"
+	_show_anchor.button_pressed = true
+	_show_anchor.toggled.connect(func(_on: bool) -> void: _refresh_detail())
+	panel.add_child(_show_anchor)
+	_hq_staff = SpinBox.new()
+	_hq_staff.min_value = 0
+	_hq_staff.max_value = 200
+	_hq_staff.step = 1
+	_hq_staff.value_changed.connect(func(_v: float) -> void: _refresh_detail())
+	panel.add_child(_labeled("HQ staff length (0 = default)", _hq_staff))
 
 	_m1_opt = OptionButton.new()
 	_m1_opt.fit_to_longest_item = false
@@ -193,6 +248,12 @@ func _build_ui() -> void:
 	copy.text = "Copy SVG"
 	copy.pressed.connect(_on_copy_svg)
 	panel.add_child(copy)
+
+
+func _add_amplifiers(items: Array[String]) -> void:
+	for text in items:
+		_amp_opt.add_item(text)
+		_amp_opt.set_item_metadata(_amp_opt.item_count - 1, text.substr(0, 2))
 
 
 func _option(items: Array, selected: int) -> OptionButton:
@@ -301,7 +362,12 @@ func _options(size: float) -> Dictionary:
 	return opts
 
 
-func _make_sidc(identity: String, entity: String, m1: String, m2: String) -> String:
+## Grid cards use the plain form; the detail preview passes `detail = true` to add the side panel settings.
+func _make_sidc(identity: String, entity: String, m1: String, m2: String, detail: bool = false) -> String:
+	if detail:
+		var amp: String = str(_amp_opt.get_item_metadata(_amp_opt.selected))
+		return "%s%d%s%s%d%d%s%s%s%s" % [_version(), _context_opt.selected, identity, _symbol_set(),
+			_detail_status_opt.selected, _hq_opt.selected, amp, entity, m1, m2]
 	return "%s0%s%s%s0" % [_version(), identity, _symbol_set(), _status()] + "00" + entity + m1 + m2
 
 
@@ -315,7 +381,7 @@ func _reload_tables() -> void:
 	for code in codes:
 		_entities.append({"code": str(code), "label": _label_of(main[code], "(" + str(code) + ")")})
 	if _selected_code == "" or not main.has(_selected_code):
-		_selected_code = _entities[0].code if not _entities.is_empty() else ""
+		_selected_code = DEFAULT_ENTITY if main.has(DEFAULT_ENTITY) else _entities[0].code if not _entities.is_empty() else ""
 	_fill_modifier_option(_m1_opt, _tables.get("m1", {}))
 	_fill_modifier_option(_m2_opt, _tables.get("m2", {}))
 
@@ -492,9 +558,11 @@ func _refresh_detail() -> void:
 	var m2: String = _modifier_code(_m2_opt)
 	_selected_label.text = "%s — %s" % [_selected_code, label]
 	var opts: Dictionary = _options(100.0)
+	if _hq_staff.value > 0:
+		opts["hqStaffLength"] = _hq_staff.value
 	var current: String = IDENTITY_CODES[_identity_opt.selected]
 	for i in IDENTITY_CODES.size():
-		var sidc: String = _make_sidc(IDENTITY_CODES[i], _selected_code, m1, m2)
+		var sidc: String = _make_sidc(IDENTITY_CODES[i], _selected_code, m1, m2, true)
 		var render: MilSymbolRender = MilSymbol.render(sidc, opts)
 		var col := VBoxContainer.new()
 		col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -504,6 +572,7 @@ func _refresh_detail() -> void:
 		rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		if render != null:
 			rect.texture = render.to_texture(1.0)
+			_add_anchor_overlay(rect, render)
 		col.add_child(rect)
 		var id_label := Label.new()
 		id_label.text = IDENTITY_NAMES[i]
@@ -514,3 +583,21 @@ func _refresh_detail() -> void:
 		if IDENTITY_CODES[i] == current:
 			_preview_render = render
 			_sidc_edit.text = sidc
+
+
+## Adds a full-rect overlay to a preview TextureRect that draws a red cross at the render's anchor.
+func _add_anchor_overlay(target: TextureRect, render: MilSymbolRender) -> void:
+	if not _show_anchor.button_pressed or target.texture == null:
+		return
+	var o := Control.new()
+	o.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	o.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	o.draw.connect(func() -> void:
+		var ts: Vector2 = target.texture.get_size()
+		if ts.x <= 0 or ts.y <= 0:
+			return
+		var s: float = minf(o.size.x / ts.x, o.size.y / ts.y)
+		var p: Vector2 = (o.size - ts * s) * 0.5 + render.anchor * s
+		o.draw_line(p - Vector2(5, 0), p + Vector2(5, 0), Color.RED, 1.5)
+		o.draw_line(p - Vector2(0, 5), p + Vector2(0, 5), Color.RED, 1.5))
+	target.add_child(o)

@@ -6,7 +6,8 @@ extends RefCounted
 ##   var render := MilSymbol.render("10061000000000000000")  # SVG, size, anchor, metadata
 ##
 ## Port of milsymbol 3.0.5 (src/ms/symbol/setoptions.js and the symbol parts in src/symbolfunctions/).
-## Implemented parts: frame (base geometry) and icon. Modifiers come in Phase 4.
+## Implemented parts: frame (base geometry), icon, modifiers (HQ, task force, installation, feint/dummy,
+## echelon, mobility, leadership), status (condition bar) and affiliation/dimension marks (exercise, simulation).
 
 const DATA_DIR := "res://addons/milsymbol/data/"
 
@@ -24,6 +25,7 @@ const STYLE_DEFAULTS := {
 	"hqStaffLength": 0,
 	"icon": true,
 	"iconColor": "",
+	"modifierColor": "",
 	"monoColor": "",
 	"outlineColor": "rgb(239, 239, 239)",
 	"outlineWidth": 0.0,
@@ -47,6 +49,74 @@ const UNDEFINED_ICON_D := "m 94.8206,78.1372 c -0.4542,6.8983 0.6532,14.323 5.34
 const EQUIPMENT_NO_SCALE := [130100, 170000, 170400, 170600, 170700, 170800, 170900, 171100, 200200, 200300,
 	200600, 200700, 200800, 200900, 201100, 201301, 201302, 201400, 210100, 210200, 210300, 210400,
 	210500, 230200, 250000]
+## Echelon amplifiers drawn above the frame (src/symbolfunctions/modifier-echelon-json.js).
+## "fill": true means the modifier color.
+const ECHELONS := {
+	"Team/Crew": {"g": [{"type": "circle", "cx": 100, "cy": -20, "r": 15}, {"type": "path", "d": "M80,-10L120,-30"}],
+		"bbox": {"y1": -40}},
+	"Squad": {"g": [{"type": "circle", "fill": true, "cx": 100, "cy": -20, "r": 7.5}], "bbox": {"y1": -27.5}},
+	"Section": {"g": [{"type": "circle", "fill": true, "cx": 115, "cy": -20, "r": 7.5},
+		{"type": "circle", "fill": true, "cx": 85, "cy": -20, "r": 7.5}], "bbox": {"y1": -27.5}},
+	"Platoon/detachment": {"g": [{"type": "circle", "fill": true, "cx": 100, "cy": -20, "r": 7.5},
+		{"type": "circle", "fill": true, "cx": 70, "cy": -20, "r": 7.5},
+		{"type": "circle", "fill": true, "cx": 130, "cy": -20, "r": 7.5}], "bbox": {"y1": -27.5}},
+	"Company/battery/troop": {"g": [{"type": "path", "d": "M100,-10 l0,-25"}], "bbox": {"y1": -40}},
+	"Battalion/squadron": {"g": [{"type": "path", "d": "M90,-10 l0,-25"}, {"type": "path", "d": "M110,-10 l0,-25"}],
+		"bbox": {"y1": -40}},
+	"Regiment/group": {"g": [{"type": "path", "d": "M100,-10 l0,-25"}, {"type": "path", "d": "M120,-10 l0,-25"},
+		{"type": "path", "d": "M80,-10 l0,-25"}], "bbox": {"y1": -40}},
+	"Brigade": {"g": [{"type": "path", "d": "M87.5,-10 l25,-25 m0,25 l-25,-25"}], "bbox": {"y1": -40}},
+	"Division": {"g": [{"type": "path", "d": "M70,-10 l25,-25 m0,25 l-25,-25 M105,-10 l25,-25 m0,25 l-25,-25"}],
+		"bbox": {"y1": -40, "x1": 70, "x2": 130}},
+	"Corps/MEF": {"g": [{"type": "path", "d": "M52.5,-10 l25,-25 m0,25 l-25,-25 M87.5,-10 l25,-25 m0,25 l-25,-25 M122.5,-10 l25,-25 m0,25 l-25,-25"}],
+		"bbox": {"y1": -40, "x1": 52.5, "x2": 147.5}},
+	"Army": {"g": [{"type": "path", "d": "M35,-10 l25,-25 m0,25 l-25,-25 M70,-10 l25,-25 m0,25 l-25,-25 M105,-10 l25,-25 m0,25 l-25,-25 M140,-10 l25,-25 m0,25 l-25,-25"}],
+		"bbox": {"y1": -40, "x1": 35, "x2": 165}},
+	"Army Group/front": {"g": [{"type": "path", "d": "M17.5,-10 l25,-25 m0,25 l-25,-25 M52.5,-10 l25,-25 m0,25 l-25,-25 M87.5,-10 l25,-25 m0,25 l-25,-25 M122.5,-10 l25,-25 m0,25 l-25,-25 M157.5,-10 l25,-25 m0,25 l-25,-25"}],
+		"bbox": {"y1": -40, "x1": 17.5, "x2": 182.5}},
+	"Region/Theater": {"g": [{"type": "path", "d": "M0,-10 l25,-25 m0,25 l-25,-25 M35,-10 l25,-25 m0,25 l-25,-25 M70,-10 l25,-25 m0,25 l-25,-25 M105,-10 l25,-25 m0,25 l-25,-25 M140,-10 l25,-25 m0,25 l-25,-25 M175,-10 l25,-25 m0,25 l-25,-25"}],
+		"bbox": {"y1": -40, "x1": 0, "x2": 200}},
+	"Command": {"g": [{"type": "path", "d": "M70,-22.5 l25,0 m-12.5,12.5 l0,-25 M105,-22.5 l25,0 m-12.5,12.5 l0,-25"}],
+		"bbox": {"y1": -40, "x1": 70, "x2": 130}},
+}
+## Mobility amplifiers drawn below the frame; "dy" is added to the frame bottom for the bbox.
+const MOBILITIES := {
+	"Wheeled limited cross country": {"g": [{"type": "path", "d": "M 53,1 l 94,0"},
+		{"type": "circle", "cx": 58, "cy": 8, "r": 8}, {"type": "circle", "cx": 142, "cy": 8, "r": 8}], "dy": 16},
+	"Wheeled cross country": {"g": [{"type": "path", "d": "M 53,1 l 94,0"},
+		{"type": "circle", "cx": 58, "cy": 8, "r": 8}, {"type": "circle", "cx": 142, "cy": 8, "r": 8},
+		{"type": "circle", "cx": 100, "cy": 8, "r": 8}], "dy": 16},
+	"Tracked": {"g": [{"type": "path", "d": "M 53,1 l 100,0 c15,0 15,15 0,15 l -100,0 c-15,0 -15,-15 0,-15"}],
+		"dy": 18, "x1": 42, "x2": 168},
+	"Wheeled and tracked combination": {"g": [{"type": "circle", "cx": 58, "cy": 8, "r": 8},
+		{"type": "path", "d": "M 83,1 l 70,0 c15,0 15,15 0,15 l -70,0 c-15,0 -15,-15 0,-15"}], "dy": 16, "x2": 168},
+	"Towed": {"g": [{"type": "path", "d": "M 63,1 l 74,0"}, {"type": "circle", "cx": 58, "cy": 3, "r": 8},
+		{"type": "circle", "cx": 142, "cy": 3, "r": 8}], "dy": 10},
+	"Rail": {"g": [{"type": "path", "d": "M 53,1 l 96,0"}, {"type": "circle", "cx": 58, "cy": 8, "r": 8},
+		{"type": "circle", "cx": 73, "cy": 8, "r": 8}, {"type": "circle", "cx": 127, "cy": 8, "r": 8},
+		{"type": "circle", "cx": 142, "cy": 8, "r": 8}], "dy": 16},
+	"Over snow (prime mover)": {"g": [{"type": "path", "d": "M 50,-9 l10,10 90,0"}], "dy": 9},
+	"Sled": {"g": [{"type": "path", "d": "M 145,-12  c15,0 15,15 0,15 l -90,0 c-15,0 -15,-15 0,-15"}],
+		"dy": 15, "x1": 42, "x2": 168},
+	"Pack animals": {"g": [{"type": "path", "d": "M 80,20 l 10,-20 10,20 10,-20 10,20"}], "dy": 20},
+	"Barge": {"g": [{"type": "path", "d": "M 50,1 l 100,0 c0,10 -100,10 -100,0"}], "dy": 10},
+	"Amphibious": {"g": [{"type": "path", "d": "M 65,10 c 0,-10 10,-10 10,0 0,10 10,10 10,0\t0,-10 10,-10 10,0 0,10 10,10 10,0\t0,-10 10,-10 10,0 0,10 10,10 10,0\t0,-10 10,-10 10,0"}],
+		"dy": 20},
+	"Short towed array": {"g": [{"type": "path", "fill": true, "d": "M 50,5 l 100,0 M50,0 l10,0 0,10 -10,0 z M150,0 l-10,0 0,10 10,0 z M100,0 l5,5 -5,5 -5,-5 z"}],
+		"dy": 10},
+	"Long towed Array": {"g": [{"type": "path", "fill": true, "d": "M 50,5 l 100,0 M50,0 l10,0 0,10 -10,0 z M150,0 l-10,0 0,10 10,0 z M105,0 l-10,0 0,10 10,0 z M75,0 l5,5 -5,5 -5,-5 z  M125,0 l5,5 -5,5 -5,-5 z"}],
+		"dy": 10},
+}
+const TASK_FORCE_WIDTHS := {"Corps/MEF": 110, "Army": 145, "Army Group/front": 180, "Region/Theater": 215}
+const HQ_STAFF_FROM_BOTTOM := ["AirFriend", "AirNeutral", "GroundFriend", "GroundNeutral", "SeaNeutral",
+	"SubsurfaceNeutral"]
+const CONDITION_COLORS := {
+	"FullyCapable": "rgb(0,255,0)",
+	"Damaged": "rgb(255,255,0)",
+	"Destroyed": "rgb(255,0,0)",
+	"FullToCapacity": "rgb(0, 180, 240)",
+}
+
 ## Parts added for entity subtypes 95-98.
 const SUBTYPE_PARTS := {
 	"95": "GR.IC.FF.HEADQUARTERS OR HEADQUARTERS ELEMENT",
@@ -107,11 +177,20 @@ static func render(sidc: String, options: Dictionary = {}) -> MilSymbolRender:
 	var instructions: Array = []
 	var bbox := {"x1": 100.0, "y1": 100.0, "x2": 100.0, "y2": 100.0}
 	# Symbol parts in milsymbol's order: pre is drawn underneath everything so far, post on top.
-	var parts: Array[Dictionary] = [
-		_part_base_geometry(metadata, style, colors),
-		_part_icon(sidc, metadata, style, colors, state),
-	]
-	for m in parts:
+	# Each part sees the bbox merged from the parts before it (mobility needs it).
+	for part in ["base_geometry", "icon", "modifier", "status", "affiliation_dimension"]:
+		var m: Dictionary
+		match part:
+			"base_geometry":
+				m = _part_base_geometry(metadata, style, colors)
+			"icon":
+				m = _part_icon(sidc, metadata, style, colors, state)
+			"modifier":
+				m = _part_modifier(metadata, style, colors, bbox)
+			"status":
+				m = _part_status(metadata, style, colors, symbol_options)
+			"affiliation_dimension":
+				m = _part_affiliation_dimension(metadata, style, colors)
 		var pre: Array = m.pre
 		var post: Array = m.post
 		if not pre.is_empty():
@@ -208,11 +287,16 @@ static func _contains_null(value: Variant) -> bool:
 	return false
 
 
+## Like milsymbol's BBox.merge: missing or null keys are ignored.
 static func _merge_bbox(bbox: Dictionary, other: Dictionary) -> void:
-	bbox.x1 = minf(bbox.x1, other.x1)
-	bbox.y1 = minf(bbox.y1, other.y1)
-	bbox.x2 = maxf(bbox.x2, other.x2)
-	bbox.y2 = maxf(bbox.y2, other.y2)
+	if other.get("x1") != null:
+		bbox.x1 = minf(bbox.x1, other.x1)
+	if other.get("y1") != null:
+		bbox.y1 = minf(bbox.y1, other.y1)
+	if other.get("x2") != null:
+		bbox.x2 = maxf(bbox.x2, other.x2)
+	if other.get("y2") != null:
+		bbox.y2 = maxf(bbox.y2, other.y2)
 
 
 #region Colors (src/ms/symbol/getcolors.js, resolvecolormode.js)
@@ -435,6 +519,229 @@ static func _set_non_scaling_stroke(instruction: Variant, factor: float) -> void
 
 static func _translate(x: float, y: float, instruction: Variant) -> Dictionary:
 	return {"type": "translate", "x": x, "y": y, "draw": [instruction]}
+
+
+## HQ staff, task force, installation, feint/dummy, echelon, mobility, leadership
+## (src/symbolfunctions/modifier.js). `symbol_bbox` is the bbox merged from the previous parts.
+static func _part_modifier(metadata: Dictionary, style: Dictionary, colors: Dictionary,
+		symbol_bbox: Dictionary) -> Dictionary:
+	var pre: Array = []
+	var post: Array = []
+	var base: Dictionary = metadata.baseGeometry.bbox
+	var bbox := {"x1": float(base.x1), "y1": float(base.y1), "x2": float(base.x2), "y2": float(base.y2)}
+	var gbbox := {"x1": 100.0, "y1": 100.0, "x2": 100.0, "y2": 100.0}
+	var affiliation = metadata.affiliation
+	var color: Variant
+	if style.modifierColor:
+		color = style.modifierColor
+	elif style.frameColor is Dictionary:
+		color = _resolve_color_mode(style.frameColor, style, metadata, true).get(affiliation)
+	else:
+		color = colors.iconColor.get(affiliation, false)
+	var outline_color = _outline_color(style, affiliation)
+	var geometry_key := "%s%s" % [metadata.dimension, affiliation]
+
+	var hq_staff_length: float = style.hqStaffLength if style.hqStaffLength else _hq_staff_length
+	if metadata.headquarters and hq_staff_length > 0:
+		var y: float = bbox.y2 if geometry_key in HQ_STAFF_FROM_BOTTOM else 100.0
+		var geom := {"type": "path", "cssClass": "milsymbol-headquarters",
+				"d": "M%s,%s L%s,%s" % [_n(bbox.x1), _n(y), _n(bbox.x1), _n(bbox.y2 + hq_staff_length)]}
+		if style.outlineWidth > 0:
+			pre.append(_outline(geom, style.outlineWidth, style.strokeWidth, outline_color))
+		post.append(geom)
+		gbbox.y2 = bbox.y2 + hq_staff_length
+
+	if metadata.taskForce:
+		var width: float = TASK_FORCE_WIDTHS.get(metadata.echelon, 90)
+		var left := 100 - width / 2
+		var right := 100 + width / 2
+		var geom := {"type": "path", "cssClass": "milsymbol-taskforce",
+				"d": "M%s,%s L%s,%s %s,%s %s,%s" % [_n(left), _n(bbox.y1), _n(left), _n(bbox.y1 - 40),
+					_n(right), _n(bbox.y1 - 40), _n(right), _n(bbox.y1)]}
+		if style.outlineWidth > 0:
+			pre.append(_outline(geom, style.outlineWidth, style.strokeWidth, outline_color))
+		post.append(geom)
+		gbbox.x1 = minf(bbox.x1, left)
+		gbbox.x2 = maxf(bbox.x2, right)
+		gbbox.y1 = bbox.y1 - 40
+
+	if metadata.installation:
+		var gap := 0.0
+		if geometry_key in ["AirHostile", "GroundHostile", "SeaHostile"]:
+			gap = 14.0
+		if geometry_key in ["AirUnknown", "GroundUnknown", "SeaUnknown", "AirFriend", "SeaFriend"]:
+			gap = 2.0
+		var sw: float = style.strokeWidth
+		var geom := {"type": "path", "fill": color, "cssClass": "milsymbol-installation",
+				"d": "M85,%s 85,%s 115,%s 115,%s 100,%s Z" % [_n(bbox.y1 + gap - sw / 2), _n(bbox.y1 - 10),
+					_n(bbox.y1 - 10), _n(bbox.y1 + gap - sw / 2), _n(bbox.y1 - sw)]}
+		if style.outlineWidth > 0:
+			pre.append(_outline(geom, style.outlineWidth, style.strokeWidth, outline_color))
+		post.append(geom)
+		_merge_bbox(gbbox, {"y1": bbox.y1 - 10})
+
+	if metadata.feintDummy:
+		var top: float = bbox.y1 - (bbox.x2 - bbox.x1) / 2
+		var geom := {"type": "path", "strokedasharray": _dash_arrays.feintDummy, "cssClass": "milsymbol-feintdummy",
+				"d": "M100,%s L%s,%s M100,%s L%s,%s" % [_n(top), _n(bbox.x1), _n(bbox.y1), _n(top),
+					_n(bbox.x2), _n(bbox.y1)]}
+		if style.outlineWidth > 0:
+			pre.append(_outline(geom, style.outlineWidth, style.strokeWidth, outline_color))
+		post.append(geom)
+		_merge_bbox(gbbox, {"y1": top})
+
+	if metadata.echelon and ECHELONS.has(metadata.echelon):
+		var echelon: Dictionary = ECHELONS[metadata.echelon]
+		var padding := 15.0 if metadata.installation else 0.0
+		var geom: Array = []
+		for item: Dictionary in echelon.g:
+			var g := item.duplicate()
+			g.cssClass = "milsymbol-echelon"
+			if g.has("fill"):
+				if g.fill is bool and g.fill:
+					g.fill = color
+				g.cssClass = "milsymbol-echelon milsymbol-echelon-fill"
+			geom.append(g)
+		if style.outlineWidth > 0:
+			# milsymbol translates the outline by -padding only, not by the frame top (kept for parity).
+			pre.append(_outline({"type": "translate", "x": 0, "y": -padding, "draw": geom},
+					style.outlineWidth, style.strokeWidth, outline_color))
+		post.append({"type": "translate", "x": 0, "y": bbox.y1 - padding, "draw": geom})
+		var eb: Dictionary = echelon.bbox
+		_merge_bbox(gbbox, {"x1": eb.get("x1"), "x2": eb.get("x2"), "y1": bbox.y1 + eb.y1 - padding})
+
+	if metadata.mobility and MOBILITIES.has(metadata.mobility):
+		if not style.frame:
+			bbox.y2 = symbol_bbox.y2
+		if affiliation == "Neutral":
+			if metadata.mobility in ["Towed", "Short towed array", "Long towed Array"]:
+				bbox.y2 += 8
+			if metadata.mobility in ["Over snow (prime mover)", "Sled"]:
+				bbox.y2 += 18
+			if metadata.mobility == "Barge":
+				bbox.y2 += 5
+		var mobility: Dictionary = MOBILITIES[metadata.mobility]
+		var geom: Array = []
+		for item: Dictionary in mobility.g:
+			var g := item.duplicate()
+			if g.get("fill") is bool and g.fill:
+				g.fill = color
+			geom.append(g)
+		if style.outlineWidth > 0:
+			pre.append(_outline({"type": "translate", "x": 0, "y": bbox.y2, "draw": geom},
+					style.outlineWidth, style.strokeWidth, outline_color))
+		post.append({"type": "translate", "x": 0, "y": bbox.y2, "draw": geom})
+		_merge_bbox(gbbox, {"x1": mobility.get("x1"), "x2": mobility.get("x2"), "y2": bbox.y2 + mobility.dy})
+
+	if metadata.get("leadership") and affiliation == "Friend":
+		pre.append({"type": "path", "d": "m 45,60 55,-25 55,25"})
+		_merge_bbox(gbbox, {"y1": bbox.y1 - 20})
+
+	for list in [pre, post]:
+		for item in list:
+			if not item is Dictionary:
+				continue
+			if item.get("fill") is bool and item.fill:
+				item.fill = color
+			if not item.has("fill"):
+				item.fill = false
+			if not item.has("stroke"):
+				item.stroke = color
+			if not item.has("strokewidth"):
+				item.strokewidth = style.strokeWidth
+	return {"pre": pre, "post": post, "bbox": gbbox}
+
+
+## Operational condition bar or slashes (src/symbolfunctions/statusmodifier.js).
+static func _part_status(metadata: Dictionary, style: Dictionary, colors: Dictionary,
+		symbol_options: Dictionary) -> Dictionary:
+	var pre: Array = []
+	var post: Array = []
+	var base: Dictionary = metadata.baseGeometry.bbox
+	var y1 := float(base.y1)
+	var y2 := float(base.y2)
+	var affiliation = metadata.affiliation
+	var frame_color = colors.frameColor.get(affiliation, false)
+	var outline_color = _outline_color(style, affiliation)
+	if metadata.condition:
+		if metadata.fill and style.monoColor == "" and not style.simpleStatusModifier:
+			if not metadata.frame and metadata.get("iconBottom"):
+				y2 = metadata.iconBottom
+			if symbol_options.get("headquartersElement", ""):
+				y2 += 35
+			y2 += 25 if metadata.mobility else 5
+			var width := float(base.x2) - float(base.x1)
+			post.append({"type": "path", "strokewidth": style.strokeWidth,
+					"fill": CONDITION_COLORS.get(metadata.condition), "stroke": frame_color,
+					"d": "M%s,%s l%s,0 0,25 -%s,0 z" % [_n(base.x1), _n(y2), _n(width), _n(width)]})
+			y2 += 25
+			if style.outlineWidth > 0:
+				pre.append(_outline(post, style.outlineWidth, style.strokeWidth, outline_color))
+		else:
+			if metadata.condition in ["Damaged", "Destroyed"]:
+				post.append({"type": "path", "d": "M150,20 L50,180", "strokewidth": style.strokeWidth * 2,
+						"stroke": frame_color})
+				y1 = 20
+				y2 = 180
+			if metadata.condition == "Destroyed":
+				post.append({"type": "path", "d": "M50,20 L150,180", "strokewidth": style.strokeWidth * 2,
+						"stroke": frame_color})
+			if style.outlineWidth > 0:
+				pre.append(_outline(post, style.outlineWidth, style.strokeWidth, outline_color))
+	return {"pre": pre, "post": post, "bbox": {"y1": y1, "y2": y2}}
+
+
+## "?" for unknown dimension and X / J / K / S for exercise and simulation contexts
+## (src/symbolfunctions/affliationdimension.js).
+static func _part_affiliation_dimension(metadata: Dictionary, style: Dictionary, colors: Dictionary) -> Dictionary:
+	var pre: Array = []
+	var post: Array = []
+	var bbox: Dictionary = metadata.baseGeometry.bbox
+	var affiliation = metadata.affiliation
+	var frame_color = colors.frameColor.get(affiliation, false)
+	var has_color: bool = not (frame_color == null or (frame_color is bool and not frame_color) or str(frame_color) == "")
+	if metadata.dimensionUnknown and has_color:
+		post.append(_text({"type": "text", "text": "?", "x": 100, "y": 127, "fill": frame_color,
+				"fontfamily": style.fontfamily, "fontsize": 80, "fontweight": "bold", "textanchor": "middle"}, style))
+	if not metadata.baseGeometry.g.is_empty() and has_color:
+		var spacing := 10.0
+		if affiliation == "Unknown" or (affiliation == "Hostile" and metadata.dimension != "Subsurface"):
+			spacing = -10.0
+		var x := float(bbox.x2) + spacing
+		var letter := {"type": "text", "x": x, "fill": frame_color, "fontfamily": style.fontfamily, "fontsize": 35,
+				"fontweight": "bold", "textanchor": "start", "alignmentBaseline": "middle"}
+		if metadata.context == "Exercise":
+			if not (metadata.joker or metadata.faker):
+				post.append(_text(letter.merged({"text": "X", "y": 50}), style))
+			if metadata.joker:
+				post.append(_text(letter.merged({"text": "J", "y": 40}), style))
+			if metadata.faker:
+				post.append(_text(letter.merged({"text": "K", "y": 40}), style))
+			bbox = {"x2": x + 22, "y1": 15.0}
+		if metadata.context == "Simulation":
+			post.append(_text(letter.merged({"text": "S", "y": 40}), style))
+			bbox = {"x1": 100.0, "y1": 15.0, "x2": x + 22, "y2": 100.0}
+	if style.outlineWidth > 0:
+		pre.append(_outline(post, style.outlineWidth, style.strokeWidth, _outline_color(style, affiliation)))
+	return {"pre": pre, "post": post, "bbox": bbox}
+
+
+## Text drawn at render time: outlines from glyph data unless textMode is "svg".
+static func _text(instruction: Dictionary, style: Dictionary) -> Dictionary:
+	if style.textMode == "svg":
+		return instruction
+	return MilSymbolTextLayout.to_instruction(instruction)
+
+
+static func _outline_color(style: Dictionary, affiliation: Variant) -> Variant:
+	var color = style.outlineColor
+	if color is Dictionary:
+		return color.get(affiliation)
+	return color
+
+
+static func _n(value: Variant) -> String:
+	return MilSymbolSvgWriter.num(value)
 
 
 static func _clone_geometry(g: Dictionary) -> Dictionary:

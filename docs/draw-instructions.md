@@ -194,6 +194,16 @@ With `fill: false` / `monoColor` the frame and icon take the affiliation color i
 ```
 bbox `{x1:25, y1:22.5, x2:175, y2:150}` (echelon dots raise y1 above the frame), anchor `(79, 81.5)`.
 
+## 7b. Known milsymbol 3.0.5 quirks
+
+- `modifier.js` writes `fill = color` into the shared echelon objects from `modifier-echelon-json.js`, so the
+  first echelon symbol's color sticks for the rest of the process. Golden scripts reset them
+  (`tools/export/milsymbol-fresh.mjs`); the port builds fresh instructions every time.
+- The echelon outline is translated by `-installationPadding` instead of `bbox.y1 - installationPadding`, so it is
+  drawn far above the frame. Kept as-is for parity.
+- `modifier.js` checks `metadata.dimensionType + metadata.affiliationType == "SubsurfaceFriend"`; those keys never
+  exist, so that branch is dead. Not ported.
+
 ## 8. Exported icon data (`addons/milsymbol/data/icons_<symbolset>.json`)
 
 Written by `tools/export/icons.mjs`, read by `addons/milsymbol/icons.gd`.

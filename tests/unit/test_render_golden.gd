@@ -16,9 +16,9 @@ func before_all() -> void:
 		_manifest = parsed
 
 
-## Entries the renderer is expected to match so far: no HQ/TF/dummy and no echelon (Phase 4).
+## Entries the renderer is expected to match: all of them since Phase 4.
 func _supported_entries() -> Array:
-	return _manifest.filter(func(entry): return entry.sidc.substr(7, 3) == "000")
+	return _manifest
 
 
 func _render(entry: Dictionary) -> MilSymbolRender:

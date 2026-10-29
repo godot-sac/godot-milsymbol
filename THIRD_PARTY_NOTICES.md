@@ -64,3 +64,6 @@ Used by `tools/export/text-to-path.mjs` to read glyph outlines. Not distributed.
 - Source: https://github.com/opentypejs/opentype.js
 - Version: 2.0.0
 - License: MIT, Copyright (c) 2020 Frederik De Bleser
+
+The same Arimo glyph outlines (regular and bold, ASCII plus a few Turkish letters) are stored in
+`addons/milsymbol/data/glyphs.json` for laying out text at render time.
