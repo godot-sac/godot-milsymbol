@@ -202,6 +202,13 @@ bbox `{x1:25, y1:22.5, x2:175, y2:150}` (echelon dots raise y1 above the frame),
 - The echelon outline is translated by `-installationPadding` instead of `bbox.y1 - installationPadding`, so it is
   drawn far above the frame (visible as white tips on hostile echelons). The port draws it in the right place;
   the `milsymbolQuirks: true` option reproduces the bug (golden tests use it).
+- `ms._iconCache` keeps icon parts between symbols, and `ms._scale(factor, part, true)` writes `non_scaling_stroke`
+  into them, so one symbol can change the stroke of a later one (15/220100 then 15/220200). Golden scripts clear the
+  cache before each symbol (`resetIconCache(ms)`).
+- `ms._scale(..., true)` also sets `non_scaling_stroke` as a property of nested Arrays. `outline.js` iterates arrays
+  with `for...in`, so the property becomes an extra element without a type, which `assvg.js` writes as bare
+  attribute text (` stroke-width="10" ... >`). The port skips it; with `milsymbolQuirks: true`, `_scale` leaves a
+  marker element in such arrays and `_outline` turns it into the same attribute-only output.
 - `modifier.js` checks `metadata.dimensionType + metadata.affiliationType == "SubsurfaceFriend"`; those keys never
   exist, so that branch is dead. Not ported.
 

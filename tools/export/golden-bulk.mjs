@@ -7,13 +7,13 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import ms from "milsymbol";
-import { resetEchelons } from "./milsymbol-fresh.mjs";
+import { resetEchelons, resetIconCache } from "./milsymbol-fresh.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const dataDir = path.resolve(here, "..", "..", "addons", "milsymbol", "data");
 const outFile = path.resolve(here, "..", "..", "tests", "golden", "bulk_icons.json");
 
-const SYMBOL_SETS = ["01", "10", "30"];
+const SYMBOL_SETS = ["01", "05", "10", "15", "30", "35"];
 const IDENTITIES = ["1", "3", "4", "6"];
 const SAMPLE_VARIANTS = [{ frame: false }, { monoColor: "rgb(0,0,128)" }, { fill: false }, { outlineWidth: 3, fill: false }];
 const SAMPLE_EVERY = 7;
@@ -21,6 +21,7 @@ const SAMPLE_EVERY = 7;
 const entries = [];
 function add(sidc, options = {}) {
   resetEchelons();
+  resetIconCache(ms);
   const symbol = new ms.Symbol(sidc, options);
   const size = symbol.getSize();
   const anchor = symbol.getAnchor();

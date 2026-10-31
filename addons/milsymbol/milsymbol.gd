@@ -46,6 +46,8 @@ const STYLE_DEFAULTS := {
 
 const AFFILIATIONS := ["Civilian", "Friend", "Hostile", "Neutral", "Unknown", "Suspect"]
 
+## Marker that _scale leaves in nested Arrays (see _set_non_scaling_stroke), only used with milsymbolQuirks.
+const ARRAY_PROPERTY_MARK := "milsymbolArrayProperty"
 ## Drawn when an entity code has no icon (src/symbolfunctions/icon.js).
 const UNDEFINED_ICON_D := "m 94.8206,78.1372 c -0.4542,6.8983 0.6532,14.323 5.3424,19.6985 4.509,5.6933 11.309,9.3573 14.98,15.7283 3.164,6.353 -0.09,14.245 -5.903,17.822 -7.268,4.817 -18.6219,2.785 -22.7328,-5.249 -1.5511,-2.796 -2.3828,-5.931 -2.8815,-9.071 -3.5048,0.416 -7.0093,0.835 -10.5142,1.252 0.8239,8.555 5.2263,17.287 13.2544,21.111 7.8232,3.736 17.1891,3.783 25.3291,1.052 8.846,-3.103 15.737,-11.958 15.171,-21.537 0.05,-6.951 -4.272,-12.85 -9.134,-17.403 -4.526,-4.6949 -11.048,-8.3862 -12.401,-15.2748 -1.215,-2.3639 -0.889,-8.129 -0.889,-8.129 z m -0.6253,-20.5177 0,11.6509 11.6527,0 0,-11.6509 z"
 ## Entity codes in symbol set 15 (land equipment) whose icon is not scaled for modifiers.
@@ -540,7 +542,7 @@ static func _part_icon(sidc: String, metadata: Dictionary, style: Dictionary, co
 		var outline_color = style.outlineColor
 		if outline_color is Dictionary:
 			outline_color = outline_color.get(metadata.affiliation)
-		pre.append(_outline(post, style.outlineWidth, style.strokeWidth, outline_color))
+		pre.append(_outline(post, style.outlineWidth, style.strokeWidth, outline_color, style.milsymbolQuirks))
 	return {"pre": pre, "post": post, "bbox": bbox}
 
 
@@ -560,8 +562,15 @@ static func _set_non_scaling_stroke(instruction: Variant, factor: float) -> void
 				if item.has("draw"):
 					_set_non_scaling_stroke(item.draw, factor)
 			elif item is Array:
+				# milsymbol also sets non_scaling_stroke as a property of the Array itself. outline.js
+				# walks arrays with for...in, so that property becomes an extra, typeless outline element.
+				# GDScript arrays cannot carry properties: append a marker that _outline understands.
+				var marked: bool = (not item.is_empty() and item.back() is Dictionary
+						and item.back().get("type") == ARRAY_PROPERTY_MARK)
 				for child in item:
 					_set_non_scaling_stroke(child, factor)
+				if not marked:
+					item.append({"type": ARRAY_PROPERTY_MARK})
 	elif instruction is Dictionary:
 		instruction.non_scaling_stroke = 1.0 / factor
 
@@ -807,13 +816,20 @@ static func _clone_geometry(g: Dictionary) -> Dictionary:
 
 
 ## Wider stroke-only copy drawn under a shape (src/ms/outline.js).
-static func _outline(geom: Variant, outline: float, stroke: float, color: Variant) -> Variant:
+## With `quirks`, Array property markers become milsymbol's malformed attribute-only element.
+static func _outline(geom: Variant, outline: float, stroke: float, color: Variant,
+		quirks := false) -> Variant:
 	if geom == null:
 		return null
 	if geom is Array:
 		var list: Array = []
 		for item in geom:
-			list.append(_outline(item, outline, stroke, color))
+			if item is Dictionary and item.get("type") == ARRAY_PROPERTY_MARK:
+				if quirks:
+					list.append({"type": MilSymbolSvgWriter.ATTRIBUTES_ONLY, "strokewidth": stroke + 2 * outline,
+							"stroke": color, "fill": false, "linecap": "round"})
+				continue
+			list.append(_outline(item, outline, stroke, color, quirks))
 		return list
 	var clone := {}
 	for key in geom:
@@ -822,7 +838,7 @@ static func _outline(geom: Variant, outline: float, stroke: float, color: Varian
 	if geom.get("type") in ["translate", "rotate", "scale"]:
 		clone.draw = []
 		for item in geom.get("draw", []):
-			clone.draw.append(_outline(item, outline, stroke, color))
+			clone.draw.append(_outline(item, outline, stroke, color, quirks))
 	else:
 		var has_stroke: bool = not (clone.has("stroke") and clone.stroke is bool and not clone.stroke)
 		var width := float(clone.get("strokewidth", 0.0))

@@ -2,7 +2,7 @@
 // Usage: node golden.mjs   (or: npm run golden)
 // Reads golden-sidcs.json, writes tests/golden/<id>.svg and tests/golden/manifest.json.
 import ms from "milsymbol";
-import { resetEchelons } from "./milsymbol-fresh.mjs";
+import { resetEchelons, resetIconCache } from "./milsymbol-fresh.mjs";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -30,6 +30,7 @@ for (const e of entries) {
   if (typeof e.sidc !== "string" || !/^\d{20}$/.test(e.sidc)) fail(`${e.id}: SIDC is not 20 digits: ${e.sidc}`);
   const options = e.options ?? {};
   resetEchelons();
+  resetIconCache(ms);
   const symbol = new ms.Symbol(e.sidc, options);
   const valid = symbol.isValid();
   if (valid === false) fail(`${e.id}: milsymbol reports the SIDC as invalid`);

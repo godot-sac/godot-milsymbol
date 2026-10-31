@@ -5,6 +5,9 @@ extends RefCounted
 
 const SVG_NS := "http://www.w3.org/2000/svg"
 const CONTAINER_TYPES := ["translate", "rotate", "scale", "clip"]
+## Writes only the style attributes and " >", without a tag, like assvg.js does for an instruction
+## without a type (milsymbolQuirks output of outline.js).
+const ATTRIBUTES_ONLY := "milsymbolAttributesOnly"
 
 
 ## `style` needs strokeWidth and styleFill. `view_box` is (x, y, w, h); `size` is width/height in pixels.
@@ -81,6 +84,8 @@ static func _element(i: Dictionary, style: Dictionary, state: Dictionary) -> Str
 					num(i.get("x", 0)), num(i.get("y", 0))]) + clip_attr
 		"scale":
 			svg += "<g" + _attr("transform", "scale(%s)" % num(i.get("factor", 1))) + clip_attr
+		ATTRIBUTES_ONLY:
+			pass
 		"clip":
 			var clip_id: String = i.get("clipId", "")
 			if clip_id == "":

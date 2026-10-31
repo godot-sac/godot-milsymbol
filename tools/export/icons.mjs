@@ -1,5 +1,5 @@
 // Exports milsymbol's icon data for number based SIDCs to addons/milsymbol/data/icons_<symbolset>.json.
-// Usage: node icons.mjs [symbolSet ...]   (default: 01 10 30; or: npm run icons)
+// Usage: node icons.mjs [symbolSet ...]   (default: 01 05 10 15 30 35; or: npm run icons)
 //
 // milsymbol builds icon parts at runtime from colors and symbol properties
 // (src/iconparts/*.js), then maps entity codes to parts (src/numbersidc/sidc/*.js).
@@ -151,5 +151,5 @@ function exportSymbolSet(symbolSet) {
 }
 
 fs.mkdirSync(outDir, { recursive: true });
-const symbolSets = process.argv.slice(2).length ? process.argv.slice(2) : ["01", "10", "30"];
+const symbolSets = process.argv.slice(2).length ? process.argv.slice(2) : ["01", "05", "10", "15", "30", "35"];
 for (const s of symbolSets) exportSymbolSet(s);

@@ -1,8 +1,9 @@
 extends Control
 ## Icon browser: every exported icon of a symbol set as a card, plus a detail panel with modifiers.
 
-const SYMBOL_SETS: Array[String] = ["01", "10", "30"]
-const SYMBOL_SET_NAMES: Array[String] = ["Air (01)", "Land unit (10)", "Sea surface (30)"]
+const SYMBOL_SETS: Array[String] = ["01", "05", "10", "15", "30", "35"]
+const SYMBOL_SET_NAMES: Array[String] = ["Air (01)", "Space (05)", "Land unit (10)", "Land equipment (15)",
+		"Sea surface (30)", "Sea subsurface (35)"]
 const EDITIONS: Array[String] = ["D", "E"]
 const EDITION_NAMES: Array[String] = ["2525D", "2525E"]
 const EDITION_VERSIONS: Array[String] = ["10", "13"]
