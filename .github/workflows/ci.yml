@@ -1,0 +1,57 @@
+# Runs the Godot (GUT) tests on Windows and Linux, then packs addons/milsymbol as one artifact.
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+env:
+  GODOT_VERSION: 4.7.2
+
+jobs:
+  godot:
+    name: Godot tests (${{ matrix.name }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Windows
+            os: windows-latest
+            godot_zip: Godot_v4.7.2-stable_win64.exe.zip
+            godot_exe: Godot_v4.7.2-stable_win64_console.exe
+          - name: Linux
+            os: ubuntu-22.04
+            godot_zip: Godot_v4.7.2-stable_linux.x86_64.zip
+            godot_exe: Godot_v4.7.2-stable_linux.x86_64
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download Godot
+        run: |
+          curl -sSfL -o godot.zip "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/${{ matrix.godot_zip }}"
+          python -m zipfile -e godot.zip godot_bin
+          chmod +x "godot_bin/${{ matrix.godot_exe }}"
+          echo "GODOT=$PWD/godot_bin/${{ matrix.godot_exe }}" >> "$GITHUB_ENV"
+      - name: GUT
+        run: |
+          "$GODOT" --headless --path . --import || true
+          "$GODOT" --headless --path . -s addons/gut/gut_cmdln.gd
+
+  package:
+    name: Addon package
+    needs: godot
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Assemble addons/milsymbol
+        run: |
+          cp LICENSE THIRD_PARTY_NOTICES.md addons/milsymbol/
+          find addons/milsymbol -type f | sort
+      - uses: actions/upload-artifact@v4
+        with:
+          name: godot-milsymbol-addon
+          path: addons/milsymbol
