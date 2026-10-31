@@ -71,6 +71,10 @@ node inspect.mjs 10031000141211000000
 
 Notes on milsymbol internals: [docs/draw-instructions.md](docs/draw-instructions.md).
 
+## Contributing
+Bug reports, questions and pull requests are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) and the
+[code of conduct](CODE_OF_CONDUCT.md).
+
 ## License
 MIT. Includes data derived from milsymbol (MIT) and glyph outlines from the Arimo font (OFL 1.1) —
 see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
