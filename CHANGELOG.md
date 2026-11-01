@@ -17,6 +17,15 @@ All notable changes to this project are documented here. Versions follow [semver
 - APP-6 icon and modifier variants (`standard: "APP6"`).
 - Coverage test against the symbol lists of milsymbol's own test suite (2525D, 2525E, APP-6D; 6293 symbols, all
   identical to milsymbol) and the generated report `docs/coverage.md`.
+- Multipoint control measures (symbol set 25 lines and areas): `MilGraphic.build()` turns a SIDC and control
+  points into drawing primitives, `MilGraphicRenderer` draws them on a `CanvasItem` or writes SVG, `MilGraphic2D`
+  node. Own geometry for boundary, phase line, LD, LD/LC, FLOT, fire support lines (FSCL, CFL, NFL, RFL), labelled
+  areas (AO, NAI, TAI, AA, OBJ, EA), FFA / NFA / RFA (irregular, rectangular, circular; NFA hatched), Axis of
+  Advance (main, supporting, aviation, attack helicopter), Direction of Attack, obstacle line / belt / zones,
+  minefield and mined areas, MSR / ASR with traffic arrows, air corridor and minimum-risk route; every other
+  line or area code of 2525D, 2525E and APP-6D is drawn as a generic line or area. Planned status, hostile "ENY",
+  feint / dummy marks and APP-6D subtypes are handled.
+- Control measure gallery demo (`demo/graphics_gallery.tscn`).
 
 ### Fixed
 - Control measure point symbols (set 25) were reported invalid.

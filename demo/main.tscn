@@ -1,10 +1,11 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://demo/main.gd" id="1"]
 [ext_resource type="PackedScene" path="res://demo/frame_grid.tscn" id="2"]
 [ext_resource type="PackedScene" path="res://demo/icon_browser.tscn" id="3"]
 [ext_resource type="PackedScene" path="res://demo/tactical_map_2d.tscn" id="4"]
 [ext_resource type="PackedScene" path="res://demo/tactical_map_3d.tscn" id="5"]
+[ext_resource type="PackedScene" path="res://demo/graphics_gallery.tscn" id="6"]
 
 [node name="Main" type="TabContainer"]
 anchors_preset = 15
@@ -27,5 +28,9 @@ layout_mode = 2
 layout_mode = 2
 
 [node name="Map 3D" parent="." instance=ExtResource("5")]
+visible = false
+layout_mode = 2
+
+[node name="Control measures" parent="." instance=ExtResource("6")]
 visible = false
 layout_mode = 2
