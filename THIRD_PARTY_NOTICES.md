@@ -91,3 +91,28 @@ no source code was copied.
 
 - Source: https://github.com/missioncommand/mil-sym-ts (commit 58cae590c7b1ddc4d762a8b00f59284f3122ef82)
 - License: Apache License 2.0 (no NOTICE file)
+
+## Esri joint-military-symbology-xml — 2525C to 2525D mapping
+
+`addons/milsymbol/data/legacy_2525c.json` (used by `MilSymbolLegacy`) is derived from
+`samples/legacy_support/LegacyMappingTableCtoD.csv` by `tools/export/legacy.mjs`: converted from CSV to JSON,
+reduced to the key and the 2525D symbol set, entity and modifier columns, rows marked "Retired" removed.
+
+- Source: https://github.com/Esri/joint-military-symbology-xml (commit 155b41a04ee9cf62de30906360b9c0fb9f2167f2)
+- License: Apache License 2.0, full text in `addons/milsymbol/LICENSE-APACHE-2.0.txt`
+
+```
+Copyright 2014 Esri
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+```

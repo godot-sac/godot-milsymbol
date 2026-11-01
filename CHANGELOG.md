@@ -30,6 +30,12 @@ All notable changes to this project are documented here. Versions follow [semver
   zoom at the cursor, named layers, click / Shift-click / box selection, unit labels, control measures with
   distances in metres). Unit symbols are packed into a `MilSymbolAtlas` texture and drawn with one MultiMesh per
   layer: 20,000 static units cost 0.33 ms per frame, 5,000 units moving every frame 8.6 ms (RTX 4080, Windows).
+- Letter based MIL-STD-2525C SIDCs: `MilSymbolLegacy` converts them to 2525D using Esri's
+  joint-military-symbology-xml mapping table (Apache-2.0); `MilSymbol.render()` and `MilGraphic.build()` accept
+  them directly.
+- `MilSymbolTextureRect`: a symbol as a UI control.
+- `MilSymbol.save_svg()` / `save_png()`, `MilGraphicRenderer.to_image()` / `save_svg()` / `save_png()`; control
+  measure labels are written as glyph outlines in PNG output.
 - Tactical map demo (`demo/tactical_map.tscn`, first tab of `demo/main.tscn`): a fictional brigade attack with
   units, control measures, debug keys and a 5,000-unit stress test (`-- --stress 5000`).
 

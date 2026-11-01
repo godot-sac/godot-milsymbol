@@ -12,7 +12,8 @@
     "golden:bulk": "node golden-bulk.mjs",
     "glyphs": "node glyphs.mjs",
     "coverage": "node coverage.mjs",
-    "control-measures": "node control-measures.mjs"
+    "control-measures": "node control-measures.mjs",
+    "legacy": "node legacy.mjs"
   },
   "dependencies": {
     "milsymbol": "3.0.5"

@@ -90,6 +90,10 @@ static func build(sidc: String, points: PackedVector2Array, amplifiers: Dictiona
 	var shape := MilGraphicShape.new()
 	shape.sidc = sidc
 	var opts := DEFAULTS.merged(options, true)
+	if MilSymbolLegacy.is_letter_sidc(sidc):
+		var converted := MilSymbolLegacy.to_number_sidc(sidc)
+		if converted != "":
+			sidc = converted  # 2525C tactical graphic ("G...") -> 2525D symbol set 25
 	if sidc.length() < 20 or not sidc.substr(0, 20).is_valid_int() or sidc.substr(4, 2) != "25":
 		shape.errors.append("not a number based control measure SIDC (symbol set 25)")
 		return shape

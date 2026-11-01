@@ -17,7 +17,10 @@ The point symbol renderer is a GDScript port of [milsymbol](https://github.com/s
   written as SVG.
 - **`TacticalMap2D`**: a map control with a latitude / longitude grid, pan and zoom, layers, selection and
   labels; thousands of units in one draw call per layer.
-- `MilSymbolSprite2D`, `MilSymbolSprite3D` and `MilGraphic2D` nodes with live preview in the editor.
+- Letter based MIL-STD-2525C SIDCs (`SFGPUCI----D---`) are converted to their 2525D equivalent and drawn.
+- `MilSymbolSprite2D`, `MilSymbolSprite3D`, `MilGraphic2D` and `MilSymbolTextureRect` (UI / HUD) nodes with
+  live preview in the editor.
+- SVG and PNG export of symbols and control measures (labels as glyph outlines in PNG).
 - Pure GDScript, no native libraries.
 
 ### Standards coverage
@@ -29,10 +32,20 @@ The point symbol renderer is a GDScript port of [milsymbol](https://github.com/s
 
 Other multipoint control measure codes are drawn as a plain line or area with their designation.
 
-Not supported: letter based SIDCs (2525B/C, APP-6A/B); text amplifier fields around point symbols (unique
-designation, higher formation, ...); the direction of movement arrow; meteorological and oceanographic symbol
-sets (45–47); mission task graphics and maritime multipoint graphics beyond the generic depiction. APP-6(E)
-has not been checked.
+**2525C letter SIDCs** are converted with Esri's legacy mapping table (1,920 entries): all warfighting (801),
+signals intelligence (85) and stability operations (60) symbols, 205 of 206 emergency management symbols and
+424 of 430 tactical graphics convert to a symbol that is drawn; meteorological symbols convert but are not
+drawn. Symbols retired in 2525D fall back to their parent symbol. The 2525D icon is used, which for a few
+symbols looks different from the 2525C one.
+
+**SIDC versions:** like milsymbol, version digits 10–12 use the 2525D tables and 13–14 the 2525E tables; other
+version digits are drawn with the 2525D tables. **APP-6(E)** (in effect since 2025-10-16) is not verified: none
+of the data sources used here has an APP-6(E) table, so APP-6(E) SIDCs are drawn as 2525E / APP-6D symbols.
+
+Not supported: letter based APP-6A/B and 2525B SIDCs (2525B codes that 2525C kept are converted); text
+amplifier fields around point symbols (unique designation, higher formation, ...); the direction of movement
+arrow; meteorological and oceanographic symbol sets (45–47); mission task graphics and maritime multipoint
+graphics beyond the generic depiction.
 
 ## Requirements
 - Godot 4.7.x (other 4.x versions are untested).
@@ -56,11 +69,13 @@ add_child(unit)
 ```
 
 Share a **MilSymbolStyle** resource between many symbols to change colour mode, fill, outline etc. at once.
-Textures and SVG directly:
+For UI, use **MilSymbolTextureRect** (a `TextureRect`). Textures, SVG and files directly:
 
 ```gdscript
 var texture := MilSymbol.create_texture("10061000001211000000", {"size": 80, "colorMode": "Dark"})
 var render := MilSymbol.render("10061000001211000000")  # svg, size, anchor, metadata, valid
+MilSymbol.save_png("SFGPUCI----D---", "user://platoon.png", {"size": 80})  # 2525C letter SIDC
+print(MilSymbolLegacy.to_number_sidc("SFGPUCI----D---"))  # 10031000141211000000
 ```
 Option names follow milsymbol (`size`, `colorMode`, `fill`, `frame`, `monoColor`, `outlineWidth`,
 `standard`, ...). Godot's SVG loader does not draw `<text>`, so labels are drawn as outlines from bundled
@@ -75,7 +90,7 @@ var shape := MilGraphic.build("10032500001403000000", PackedVector2Array([Vector
 func _draw() -> void:
 	MilGraphicRenderer.draw(self, shape)
 ```
-Or use a **MilGraphic2D** node. Point order, amplifiers and colours: [docs/control-measures.md](docs/control-measures.md).
+Or use a **MilGraphic2D** node. `MilGraphicRenderer.save_svg()` / `save_png()` write files. Point order, amplifiers and colours: [docs/control-measures.md](docs/control-measures.md).
 
 ### Tactical map
 ```gdscript
@@ -115,7 +130,7 @@ godot --headless --path . -s addons/gut/gut_cmdln.gd
 
 # Regenerate data and reference output from milsymbol and the standards data packages
 cd tools/export && npm ci
-npm run data && npm run icons && npm run glyphs && npm run control-measures
+npm run data && npm run icons && npm run glyphs && npm run control-measures && npm run legacy
 npm run golden && npm run golden:bulk && npm run coverage
 
 # Reports and control measure regression SVGs
@@ -133,6 +148,7 @@ Bug reports, questions and pull requests are welcome. Please read [CONTRIBUTING.
 [code of conduct](CODE_OF_CONDUCT.md).
 
 ## License
-MIT. Includes data derived from milsymbol and its standards data packages (MIT) and glyph outlines from the
-Arimo font (OFL 1.1); control measure shapes follow mil-sym-ts (Apache-2.0) as a reference. See
-[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+MIT. Includes data derived from milsymbol and its standards data packages (MIT), glyph outlines from the
+Arimo font (OFL 1.1) and the 2525C to 2525D mapping from Esri joint-military-symbology-xml (Apache-2.0,
+`addons/milsymbol/LICENSE-APACHE-2.0.txt`); control measure shapes follow mil-sym-ts (Apache-2.0) as a
+reference. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

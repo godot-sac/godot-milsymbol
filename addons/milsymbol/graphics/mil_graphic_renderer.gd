@@ -95,8 +95,11 @@ static func draw(canvas: CanvasItem, shape: MilGraphicShape, style: Dictionary =
 		canvas.draw_set_transform(Vector2.ZERO)
 
 
-## SVG document for the shape (for documentation and tests). Text uses the SVG font, sans-serif.
-static func to_svg(shape: MilGraphicShape, style: Dictionary = {}, margin: float = 20.0) -> String:
+## SVG document for the shape (for documentation and tests). Text is written as <text> (sans-serif), or with
+## `text_as_path` as outlines of the bundled Arimo glyphs, which Godot's SVG loader can draw (see to_image()).
+## Characters outside the glyph set (echelon dots) are left out in that mode.
+static func to_svg(shape: MilGraphicShape, style: Dictionary = {}, margin: float = 20.0,
+		text_as_path: bool = false) -> String:
 	var s := DEFAULT_STYLE.merged(style, true)
 	var color := _css(color_of(shape, s))
 	var bounds := shape.get_bounds().grow(margin)
@@ -117,8 +120,7 @@ static func to_svg(shape: MilGraphicShape, style: Dictionary = {}, margin: float
 						_points(primitive.points), color, _n(primitive.get("fill_alpha", 0.3))]
 			"symbol":
 				var render := MilSymbol.render_cached(primitive.sidc, {"size": primitive.size, "monoColor": color})
-				var origin: Vector2 = primitive.position - render.anchor
-				svg += render.svg.replace("<svg ", '<svg x="%s" y="%s" ' % [_n(origin.x), _n(origin.y)])
+				svg += _embedded_symbol(render, primitive.position - render.anchor)
 			"text":
 				var anchor := "middle" if primitive.align == 0 else ("start" if primitive.align < 0 else "end")
 				var p: Vector2 = primitive.position
@@ -127,11 +129,40 @@ static func to_svg(shape: MilGraphicShape, style: Dictionary = {}, margin: float
 					var left := p.x - w / 2.0 if primitive.align == 0 else (p.x if primitive.align < 0 else p.x - w)
 					svg += '<rect x="%s" y="%s" width="%s" height="%s" fill="white" fill-opacity="0.85"/>' % [
 							_n(left), _n(p.y - primitive.size * 0.8), _n(w), _n(primitive.size * 1.6)]
+				if text_as_path:
+					svg += _text_path(primitive, anchor, color)
+					continue
 				svg += ('<text x="%s" y="%s" font-family="sans-serif" font-size="%s" fill="%s" text-anchor="%s"'
 						+ ' dominant-baseline="central" transform="rotate(%s %s %s)">%s</text>') % [
 						_n(p.x), _n(p.y), _n(primitive.size), color, anchor, _n(rad_to_deg(primitive.angle)),
 						_n(p.x), _n(p.y), primitive.text.xml_escape()]
 	return svg + "</svg>"
+
+
+## Rasterizes the shape (text drawn as glyph outlines). Returns null if the SVG cannot be loaded.
+static func to_image(shape: MilGraphicShape, style: Dictionary = {}, scale: float = 1.0,
+		margin: float = 20.0) -> Image:
+	var image := Image.new()
+	if image.load_svg_from_string(to_svg(shape, style, margin, true), scale) != OK:
+		return null
+	return image
+
+
+## Writes the shape as an SVG file (text as <text>).
+static func save_svg(shape: MilGraphicShape, path: String, style: Dictionary = {}) -> Error:
+	var file := FileAccess.open(path, FileAccess.WRITE)
+	if file == null:
+		return FileAccess.get_open_error()
+	file.store_string(to_svg(shape, style))
+	return OK
+
+
+## Writes the shape as a PNG file.
+static func save_png(shape: MilGraphicShape, path: String, style: Dictionary = {}, scale: float = 1.0) -> Error:
+	var image := to_image(shape, style, scale)
+	if image == null:
+		return ERR_INVALID_DATA
+	return image.save_png(path)
 
 
 ## Splits a polyline into dashes of `dash` on / `dash` off, continuing the pattern across vertices.
@@ -173,6 +204,33 @@ static func _line_parts(primitive: Dictionary, xf: Transform2D, dash: float) -> 
 	if primitive.dashed:
 		return dash_polyline(points, dash)
 	return [points]
+
+
+# A point symbol's SVG inside the graphic: its content, scaled from its viewBox to its pixel size.
+static func _embedded_symbol(render: MilSymbolRender, origin: Vector2) -> String:
+	var svg := render.svg
+	var view_box := svg.get_slice('viewBox="', 1).get_slice('"', 0).split(" ")
+	var body := svg.substr(svg.find(">") + 1)
+	body = body.substr(0, body.rfind("</svg>"))
+	if view_box.size() != 4 or float(view_box[2]) == 0.0:
+		return ""
+	var factor := render.size.x / float(view_box[2])
+	return '<g transform="translate(%s %s) scale(%s) translate(%s %s)">%s</g>' % [_n(origin.x), _n(origin.y),
+			MilSymbolSvgWriter.num(factor), _n(-float(view_box[0])), _n(-float(view_box[1])), body]
+
+
+static func _text_path(primitive: Dictionary, anchor: String, color: String) -> String:
+	var glyphs := MilSymbolTextLayout.to_instruction({"type": "text", "x": 0, "y": 0, "text": primitive.text,
+			"fontsize": primitive.size, "textanchor": anchor, "alignmentBaseline": "central", "fill": color})
+	if glyphs.is_empty():
+		return ""
+	var p: Vector2 = primitive.position
+	var instructions := [{"type": "translate", "x": p.x, "y": p.y, "draw": [
+			{"type": "rotate", "degree": rad_to_deg(primitive.angle), "x": 0, "y": 0, "draw": [glyphs]}]}]
+	var text_svg := MilSymbolSvgWriter.write(instructions, {"strokeWidth": 0, "styleFill": false},
+			Rect2(0, 0, 1, 1), Vector2.ONE)
+	var body := text_svg.substr(text_svg.find(">") + 1)
+	return body.substr(0, body.rfind("</svg>"))
 
 
 static func _css(color: Color) -> String:

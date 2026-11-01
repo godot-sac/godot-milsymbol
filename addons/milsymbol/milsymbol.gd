@@ -173,13 +173,19 @@ static func render(sidc: String, options: Dictionary = {}) -> MilSymbolRender:
 	for key in ["fillOpacity", "outlineWidth", "padding", "size", "strokeWidth", "hqStaffLength"]:
 		style[key] = float(style[key])
 
+	var input_sidc := sidc
+	if MilSymbolLegacy.is_letter_sidc(sidc):
+		# Letter based 2525C SIDCs are drawn as their 2525D equivalent.
+		var converted := MilSymbolLegacy.to_number_sidc(sidc)
+		if converted != "":
+			sidc = converted
 	var metadata := MilSymbolSidc.decode(sidc, style, _dash_arrays)
 	metadata.baseGeometry = _base_geometry(metadata, style)
 	var colors := _get_colors(metadata, style)
 	var state := {"valid_icon": true}
 
 	var result := MilSymbolRender.new()
-	result.sidc = sidc
+	result.sidc = input_sidc
 	result.style = style
 	result.metadata = metadata
 
@@ -252,6 +258,23 @@ static func create_texture(sidc: String, options: Dictionary = {}, scale: float 
 	if not textures.has(scale):
 		textures[scale] = entry.render.to_texture(scale)
 	return textures[scale]
+
+
+## Writes the symbol as an SVG file (text labels as outlines unless options has "textMode": "svg").
+static func save_svg(sidc: String, path: String, options: Dictionary = {}) -> Error:
+	var file := FileAccess.open(path, FileAccess.WRITE)
+	if file == null:
+		return FileAccess.get_open_error()
+	file.store_string(render(sidc, options).svg)
+	return OK
+
+
+## Writes the symbol as a PNG file; `scale` multiplies the pixel size.
+static func save_png(sidc: String, path: String, options: Dictionary = {}, scale: float = 1.0) -> Error:
+	var image := render(sidc, options).to_image(scale)
+	if image == null:
+		return ERR_INVALID_DATA
+	return image.save_png(path)
 
 
 static func clear_cache() -> void:
