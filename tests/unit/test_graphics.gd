@@ -48,6 +48,14 @@ func test_table_lists_2525d_2525e_and_app6d() -> void:
 	assert_false(table["140104"].has("D"), "2525D Ch1 has no FLOT subtypes")
 
 
+func test_is_specific() -> void:
+	assert_true(MilGraphic.is_specific("140300"))
+	assert_true(MilGraphic.is_specific("151403"))
+	assert_true(MilGraphic.is_specific("240303"))
+	assert_false(MilGraphic.is_specific("110300"), "engineer work line is generic")
+	assert_false(MilGraphic.is_specific("999900"))
+
+
 func test_invalid_input() -> void:
 	assert_false(MilGraphic.build("10031000001211000000", PackedVector2Array([Vector2.ZERO, Vector2.ONE])).valid,
 			"land unit is not a control measure")

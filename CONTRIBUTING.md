@@ -37,6 +37,11 @@ godot --headless --path . -s addons/gut/gut_cmdln.gd
 Rendering is compared with milsymbol's own output (golden SVGs in `tests/golden/`); regenerate them with the tools in
 `tools/export/` only when milsymbol itself is updated.
 
+Control measures have no reference renderer: `tests/golden/graphics.json` holds our own SVG output as a regression
+check. When you change a shape on purpose, look at `demo/graphics_gallery.tscn` first, then regenerate it with
+`godot --headless --path . -s res://tools/graphics_golden.gd` and update `docs/control-measures.md` with
+`tools/control_measures_report.gd`.
+
 ## Style
 Languages: GDScript; JavaScript for the export tools.
 - **GDScript:** the [official style guide](https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_styleguide.html);

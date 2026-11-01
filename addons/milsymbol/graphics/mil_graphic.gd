@@ -74,7 +74,7 @@ const FIRE_LINES := {"260100": "FSCL", "260200": "CFL", "260300": "NFL", "260400
 const FIRE_AREAS := {"2402": "FFA", "2403": "NFA", "2404": "RFA", "2401": "ACA"}
 const SUPPLY_ROUTES := {"3303": "MSR", "3304": "ASR"}
 const CORRIDORS := {"170100": "AC", "170200": "LLTR", "170300": "MRR", "170400": "SL", "170500": "SAAFR",
-	"170600": "TC", "170700": "UA"}
+	"170600": "TC", "170700": ""}
 ## Entity code prefixes drawn in green whatever the affiliation (obstacles and mines).
 const OBSTACLE_PREFIXES := ["2701", "2702", "2703", "2704", "2705", "2707", "2708", "2709", "2710", "2712", "28", "29"]
 ## Point symbol drawn inside minefields and mined areas (unspecified mine).
@@ -158,7 +158,7 @@ static func table() -> Dictionary:
 
 ## True when the code has its own geometry (not a generic line or area).
 static func is_specific(code: String) -> bool:
-	var probe := build("100325000000%s0000" % code, PackedVector2Array(
+	var probe := build("1003250000%s0000" % code, PackedVector2Array(
 			[Vector2(0, 0), Vector2(100, 0), Vector2(100, 100), Vector2(0, 100)]), {"AM": 40.0})
 	return probe.specific and probe.valid
 
