@@ -12,3 +12,12 @@ All notable changes to this project are documented here. Versions follow [semver
   exercise / simulation marks; text labels drawn as outlines (Arimo glyphs).
 - `MilSymbol.render`, `create_texture` with a cache, `MilSymbolStyle`, `MilSymbolSprite2D` and `MilSymbolSprite3D`.
 - Golden tests against milsymbol output; demo scenes.
+- Icons for every symbol set milsymbol supports in number based SIDCs: also 02, 06, 11, 20, 25 (control measure
+  points), 27, 36, 40, 50-54 and 60.
+- APP-6 icon and modifier variants (`standard: "APP6"`).
+- Coverage test against the symbol lists of milsymbol's own test suite (2525D, 2525E, APP-6D; 6293 symbols, all
+  identical to milsymbol) and the generated report `docs/coverage.md`.
+
+### Fixed
+- Control measure point symbols (set 25) were reported invalid.
+- Unknown `text-anchor` values are written as `start`, like milsymbol.

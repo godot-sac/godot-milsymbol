@@ -1,4 +1,5 @@
-// Generates a large reference set: tests/golden/bulk_icons.json.
+// Generates a large reference set: tests/golden/bulk_icons.json (the first symbol sets and all amplifier
+// combinations) and tests/golden/bulk_icons_2.json (the remaining symbol sets).
 // Every main icon, modifier 1 and modifier 2 of the exported symbol sets, for all four
 // affiliations, plus option variants on a sample, plus amplifier/modifier combinations
 // (HQ / task force / dummy, echelons, mobility, leadership, condition, context).
@@ -11,14 +12,16 @@ import { resetEchelons, resetIconCache } from "./milsymbol-fresh.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const dataDir = path.resolve(here, "..", "..", "addons", "milsymbol", "data");
-const outFile = path.resolve(here, "..", "..", "tests", "golden", "bulk_icons.json");
+const goldenDir = path.resolve(here, "..", "..", "tests", "golden");
 
 const SYMBOL_SETS = ["01", "05", "10", "15", "30", "35"];
+// Written to bulk_icons_2.json so that neither file grows too large.
+const MORE_SYMBOL_SETS = ["02", "06", "11", "20", "25", "27", "36", "40", "50", "51", "52", "53", "54", "60"];
 const IDENTITIES = ["1", "3", "4", "6"];
 const SAMPLE_VARIANTS = [{ frame: false }, { monoColor: "rgb(0,0,128)" }, { fill: false }, { outlineWidth: 3, fill: false }];
 const SAMPLE_EVERY = 7;
 
-const entries = [];
+let entries = [];
 function add(sidc, options = {}) {
   resetEchelons();
   resetIconCache(ms);
@@ -28,10 +31,10 @@ function add(sidc, options = {}) {
   entries.push({ sidc, options, valid: symbol.isValid(), width: size.width, height: size.height, anchor: { x: anchor.x, y: anchor.y }, svg: symbol.asSVG() });
 }
 
-for (const symbolSet of SYMBOL_SETS) {
+function addSymbolSet(symbolSet) {
   const data = JSON.parse(fs.readFileSync(path.join(dataDir, `icons_${symbolSet}.json`), "utf8"));
   const tableD = data.tables.D;
-  const tableE = data.tables.E === "D" ? null : data.tables.E;
+  const tableE = typeof data.tables.E === "string" ? null : data.tables.E;
   const mains = Object.keys(tableD.main).sort();
   mains.forEach((code, i) => {
     for (const identity of IDENTITIES) add(`100${identity}${symbolSet}0000${code}0000`);
@@ -50,6 +53,7 @@ for (const symbolSet of SYMBOL_SETS) {
     }
   }
 }
+for (const symbolSet of SYMBOL_SETS) addSymbolSet(symbolSet);
 
 // Amplifiers and modifiers (Phase 4). SIDC: version, context, identity, set, status, HQ/TF/dummy, amplifier.
 const sidcOf = (context, identity, set, status, hq, amp, entity = "121100") =>
@@ -87,5 +91,12 @@ for (const status of ["2", "3", "4", "5"]) {
 }
 add(sidcOf("0", "3", "10", "0", "2", "14"), { modifierColor: "rgb(200,0,200)" });
 
-fs.writeFileSync(outFile, JSON.stringify(entries) + "\n");
-console.log(`bulk_icons.json: ${entries.length} symbols, ${(fs.statSync(outFile).size / 1024).toFixed(0)} KB`);
+function write(name) {
+  const file = path.join(goldenDir, name);
+  fs.writeFileSync(file, JSON.stringify(entries) + "\n");
+  console.log(`${name}: ${entries.length} symbols, ${(fs.statSync(file).size / 1024).toFixed(0)} KB`);
+  entries = [];
+}
+write("bulk_icons.json");
+for (const symbolSet of MORE_SYMBOL_SETS) addSymbolSet(symbolSet);
+write("bulk_icons_2.json");

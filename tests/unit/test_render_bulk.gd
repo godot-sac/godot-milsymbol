@@ -1,19 +1,20 @@
 extends GutTest
-## Compares MilSymbol.render() with milsymbol for every exported icon (tests/golden/bulk_icons.json,
+## Compares MilSymbol.render() with milsymbol for every exported icon (tests/golden/bulk_icons*.json,
 ## written by tools/export/golden-bulk.mjs). Structural SVG diff only; pixel checks are in
 ## test_render_golden.gd.
 
 const SvgCompare = preload("res://tests/helpers/svg_compare.gd")
-const BULK_FILE := "res://tests/golden/bulk_icons.json"
+const BULK_FILES := ["res://tests/golden/bulk_icons.json", "res://tests/golden/bulk_icons_2.json"]
 const MAX_LISTED := 15
 
 var _entries: Array = []
 
 
 func before_all() -> void:
-	var parsed = JSON.parse_string(FileAccess.get_file_as_string(BULK_FILE))
-	if parsed is Array:
-		_entries = parsed
+	for file in BULK_FILES:
+		var parsed = JSON.parse_string(FileAccess.get_file_as_string(file))
+		if parsed is Array:
+			_entries.append_array(parsed)
 
 
 func _label(entry: Dictionary) -> String:
@@ -21,12 +22,13 @@ func _label(entry: Dictionary) -> String:
 
 
 func test_bulk_set_is_loaded() -> void:
-	assert_gt(_entries.size(), 1000, "run `npm run golden:bulk` in tools/export")
+	assert_gt(_entries.size(), 10000, "run `npm run golden:bulk` in tools/export")
 
 
 func test_every_icon_matches_milsymbol() -> void:
 	var failures := PackedStringArray()
 	var failed := 0
+	var failed_by_set := {}
 	for entry in _entries:
 		var render := MilSymbol.render(entry.sidc, entry.options.merged({"textMode": "svg", "milsymbolQuirks": true}))
 		var problems := SvgCompare.diff(entry.svg, render.svg)
@@ -39,9 +41,12 @@ func test_every_icon_matches_milsymbol() -> void:
 		if problems.is_empty():
 			continue
 		failed += 1
+		var symbol_set: String = entry.sidc.substr(4, 2)
+		failed_by_set[symbol_set] = failed_by_set.get(symbol_set, 0) + 1
 		if failures.size() < MAX_LISTED:
 			failures.append("%s: %s" % [_label(entry), "; ".join(problems.slice(0, 3))])
-	assert_eq(failed, 0, "%d of %d symbols differ:\n%s" % [failed, _entries.size(), "\n".join(failures)])
+	assert_eq(failed, 0, "%d of %d symbols differ (by symbol set: %s):\n%s" % [failed, _entries.size(),
+			failed_by_set, "\n".join(failures)])
 
 
 func test_text_labels_render_as_paths_by_default() -> void:

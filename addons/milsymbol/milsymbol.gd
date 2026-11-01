@@ -321,7 +321,7 @@ static func _is_valid(metadata: Dictionary) -> bool:
 		return false
 	if metadata.mobility == null:
 		return false
-	return not metadata.baseGeometry.g.is_empty()
+	return true
 
 
 static func _contains_null(value: Variant) -> bool:
@@ -486,7 +486,7 @@ static func _part_icon(sidc: String, metadata: Dictionary, style: Dictionary, co
 	var bbox := {"x1": 50.0, "y1": 50.0, "x2": 150.0, "y2": 150.0}
 	if style.icon and metadata.numberSIDC:
 		var symbol_set := sidc.substr(4, 2)
-		var tables := MilSymbolIcons.get_tables(symbol_set, metadata.get("edition", "D"))
+		var tables := MilSymbolIcons.get_tables(symbol_set, metadata.get("edition", "D"), not metadata.STD2525)
 		var context := MilSymbolIcons.make_context(symbol_set, metadata, style, colors)
 		var main_table: Dictionary = tables.get("main", {})
 		var functionid: String = metadata.functionid

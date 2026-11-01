@@ -1,10 +1,10 @@
 // Exports milsymbol's icon data for number based SIDCs to addons/milsymbol/data/icons_<symbolset>.json.
-// Usage: node icons.mjs [symbolSet ...]   (default: 01 05 10 15 30 35; or: npm run icons)
+// Usage: node icons.mjs [symbolSet ...]   (default: every set milsymbol supports; or: npm run icons)
 //
 // milsymbol builds icon parts at runtime from colors and symbol properties
 // (src/iconparts/*.js), then maps entity codes to parts (src/numbersidc/sidc/*.js).
 // We run that code for every combination of the properties that can change geometry
-// (affiliation, frame, monoColor, edition) with placeholder colors, then store each part once
+// (affiliation, frame, monoColor, edition, standard) with placeholder colors, then store each part once
 // per distinct result. GDScript substitutes the placeholders at render time:
 //   "@iconColor"         -> colors.iconColor[affiliation]
 //   "@fillColor.Unknown" -> colors.fillColor.Unknown
@@ -51,9 +51,12 @@ function placeholderColors() {
 }
 
 // Builds icon parts and SIDC tables for one combination of geometry-relevant properties.
-function build(symbolSet, affiliation, frame, mono, edition) {
+// `app6`: milsymbol's APP-6 standard option (some icons and modifiers differ from 2525).
+function build(symbolSet, affiliation, frame, mono, edition, app6) {
   const sidc = `${EDITION_VERSION[edition]}0${IDENTITY_DIGIT[affiliation]}${symbolSet}0000000000000000`;
-  const symbol = new ms.Symbol(sidc, { frame, monoColor: mono ? MONO_PLACEHOLDER : "" });
+  const options = { frame, monoColor: mono ? MONO_PLACEHOLDER : "" };
+  if (app6) options.standard = "APP6";
+  const symbol = new ms.Symbol(sidc, options);
   const metadata = symbol.metadata;
   const monoColor = mono ? MONO_PLACEHOLDER : "";
   const parts = ms._getIconParts(metadata, placeholderColors(), metadata.STD2525, monoColor, false);
@@ -95,13 +98,19 @@ function collectRefs(value, into) {
 
 function exportSymbolSet(symbolSet) {
   const variants = [];
-  for (const edition of ["D", "E"])
-    for (const affiliation of AFFILIATIONS)
-      for (const frame of [true, false])
-        for (const mono of [false, true])
-          variants.push({ key: `${affiliation}|${frame ? 1 : 0}|${mono ? 1 : 0}|${edition}`, edition, ...build(symbolSet, affiliation, frame, mono, edition) });
+  // Variant key: affiliation|frame|mono|edition, plus "|A" for APP-6. Table key: edition, "A" + edition for APP-6.
+  for (const app6 of [false, true])
+    for (const edition of ["D", "E"])
+      for (const affiliation of AFFILIATIONS)
+        for (const frame of [true, false])
+          for (const mono of [false, true])
+            variants.push({
+              key: `${affiliation}|${frame ? 1 : 0}|${mono ? 1 : 0}|${edition}${app6 ? "|A" : ""}`,
+              table: `${app6 ? "A" : ""}${edition}`,
+              ...build(symbolSet, affiliation, frame, mono, edition, app6),
+            });
 
-  // Tables: serialized per edition; they must not depend on affiliation/frame/mono.
+  // Tables: serialized per edition and standard; they must not depend on affiliation/frame/mono.
   const tables = {};
   for (const v of variants) {
     const refs = new Map();
@@ -109,9 +118,9 @@ function exportSymbolSet(symbolSet) {
     v.ser = makeSerializer(refs, v.affiliation);
     const t = { main: v.ser(v.tables.icons, true), m1: v.ser(v.tables.m1, true), m2: v.ser(v.tables.m2, true), bbox: v.tables.bbox };
     const json = JSON.stringify(t);
-    if (!tables[v.edition]) tables[v.edition] = { t, json };
-    else if (tables[v.edition].json !== json) {
-      throw new Error(`symbol set ${symbolSet}: tables differ between variants of edition ${v.edition} (${v.key})`);
+    if (!tables[v.table]) tables[v.table] = { t, json };
+    else if (tables[v.table].json !== json) {
+      throw new Error(`symbol set ${symbolSet}: tables differ between variants of table ${v.table} (${v.key})`);
     }
   }
 
@@ -142,8 +151,13 @@ function exportSymbolSet(symbolSet) {
   }
 
   const sortedParts = Object.fromEntries(Object.entries(parts).sort(([a], [b]) => a.localeCompare(b)));
-  const editionE = tables.E.json === tables.D.json ? "D" : tables.E.t;
-  const data = { milsymbol: pkg.version, symbolSet, tables: { D: tables.D.t, E: editionE }, parts: sortedParts };
+  // A table equal to an earlier one is stored as that table's key.
+  const outTables = {};
+  for (const key of ["D", "E", "AD", "AE"]) {
+    const same = Object.keys(outTables).find((k) => typeof outTables[k] !== "string" && tables[k].json === tables[key].json);
+    outTables[key] = same ?? tables[key].t;
+  }
+  const data = { milsymbol: pkg.version, symbolSet, tables: outTables, parts: sortedParts };
   const file = path.join(outDir, `icons_${symbolSet}.json`);
   fs.writeFileSync(file, JSON.stringify(data) + "\n");
   const variantCount = Object.values(parts).filter((p) => p.values).length;
@@ -151,5 +165,5 @@ function exportSymbolSet(symbolSet) {
 }
 
 fs.mkdirSync(outDir, { recursive: true });
-const symbolSets = process.argv.slice(2).length ? process.argv.slice(2) : ["01", "05", "10", "15", "30", "35"];
+const symbolSets = process.argv.slice(2).length ? process.argv.slice(2) : ["01", "02", "05", "06", "10", "11", "15", "20", "25", "27", "30", "35", "36", "40", "50", "51", "52", "53", "54", "60"];
 for (const s of symbolSets) exportSymbolSet(s);

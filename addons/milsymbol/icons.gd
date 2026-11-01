@@ -3,7 +3,7 @@ extends RefCounted
 ## Loads exported icon data (data/icons_<symbolset>.json, written by tools/export/icons.mjs)
 ## and turns it into draw instructions with real colors.
 ##
-## Parts that differ by affiliation / frame / monoColor / edition are stored as variants.
+## Parts that differ by affiliation / frame / monoColor / edition / standard (2525 or APP-6) are stored as variants.
 ## Color values are placeholders ("@iconColor", "@fillColor.Unknown", "@mono") resolved here.
 
 const DATA_DIR := "res://addons/milsymbol/data/"
@@ -21,14 +21,15 @@ class Context:
 	var text_as_path: bool
 
 
-## Returns the SIDC tables {main, m1, m2, bbox} for a symbol set and edition, or {} if none were exported.
-static func get_tables(symbol_set: String, edition: String) -> Dictionary:
+## Returns the SIDC tables {main, m1, m2, bbox} for a symbol set, edition and standard (`app6` false for
+## 2525), or {} if none were exported.
+static func get_tables(symbol_set: String, edition: String, app6: bool = false) -> Dictionary:
 	var data := _load(symbol_set)
 	if data.is_empty():
 		return {}
 	var tables: Dictionary = data.tables
-	var entry = tables.get(edition, tables.D)
-	if entry is String:
+	var entry = tables.get(("A" if app6 else "") + edition, tables.D)
+	while entry is String:
 		entry = tables[entry]
 	return entry
 
@@ -38,8 +39,8 @@ static func make_context(symbol_set: String, metadata: Dictionary, style: Dictio
 	var context := Context.new()
 	context.data = _load(symbol_set)
 	context.affiliation = str(metadata.affiliation)
-	context.variant_key = "%s|%d|%d|%s" % [context.affiliation, 1 if metadata.frame else 0,
-			1 if style.monoColor != "" else 0, metadata.get("edition", "D")]
+	context.variant_key = "%s|%d|%d|%s%s" % [context.affiliation, 1 if metadata.frame else 0,
+			1 if style.monoColor != "" else 0, metadata.get("edition", "D"), "" if metadata.STD2525 else "|A"]
 	context.colors = colors
 	context.mono_color = style.monoColor
 	context.text_as_path = style.textMode != "svg"

@@ -8,6 +8,8 @@ const CONTAINER_TYPES := ["translate", "rotate", "scale", "clip"]
 ## Writes only the style attributes and " >", without a tag, like assvg.js does for an instruction
 ## without a type (milsymbolQuirks output of outline.js).
 const ATTRIBUTES_ONLY := "milsymbolAttributesOnly"
+## Allowed text-anchor values; anything else is written as "start" (assvg.js sanitizeTextAnchor).
+const TEXT_ANCHORS := ["start", "middle", "end"]
 
 
 ## `style` needs strokeWidth and styleFill. `view_box` is (x, y, w, h); `size` is width/height in pixels.
@@ -69,7 +71,8 @@ static func _element(i: Dictionary, style: Dictionary, state: Dictionary) -> Str
 			svg += _attr("r", num(i.get("r", 0))) + clip_attr
 		"text":
 			svg += "<text" + _attr("x", num(i.get("x", 0))) + _attr("y", num(i.get("y", 0)))
-			svg += _attr("text-anchor", i.get("textanchor", "start"))
+			var anchor := str(i.get("textanchor", "start")).to_lower()
+			svg += _attr("text-anchor", anchor if anchor in TEXT_ANCHORS else "start")
 			svg += _attr("font-size", num(i.get("fontsize", 12)))
 			svg += _attr("font-family", i.get("fontfamily", "sans-serif"))
 			if i.get("fontweight"):

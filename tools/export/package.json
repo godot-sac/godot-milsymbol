@@ -10,13 +10,17 @@
     "data": "node data.mjs",
     "icons": "node icons.mjs",
     "golden:bulk": "node golden-bulk.mjs",
-    "glyphs": "node glyphs.mjs"
+    "glyphs": "node glyphs.mjs",
+    "coverage": "node coverage.mjs"
   },
   "dependencies": {
     "milsymbol": "3.0.5"
   },
   "devDependencies": {
     "@fontsource/arimo": "5.3.0",
-    "opentype.js": "2.0.0"
+    "mil-std-2525": "0.2.8",
+    "milstandard-e": "0.2.14",
+    "opentype.js": "2.0.0",
+    "stanag-app6": "0.2.0"
   }
 }
