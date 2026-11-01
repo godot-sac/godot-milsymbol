@@ -26,6 +26,12 @@ All notable changes to this project are documented here. Versions follow [semver
   line or area code of 2525D, 2525E and APP-6D is drawn as a generic line or area. Planned status, hostile "ENY",
   feint / dummy marks and APP-6D subtypes are handled.
 - Control measure gallery demo (`demo/graphics_gallery.tscn`).
+- `TacticalMap2D`: reusable 2D tactical map control (Web Mercator, latitude/longitude grid, scale bar, pan and
+  zoom at the cursor, named layers, click / Shift-click / box selection, unit labels, control measures with
+  distances in metres). Unit symbols are packed into a `MilSymbolAtlas` texture and drawn with one MultiMesh per
+  layer: 20,000 static units cost 0.33 ms per frame, 5,000 units moving every frame 8.6 ms (RTX 4080, Windows).
+- Tactical map demo (`demo/tactical_map.tscn`, first tab of `demo/main.tscn`): a fictional brigade attack with
+  units, control measures, debug keys and a 5,000-unit stress test (`-- --stress 5000`).
 
 ### Fixed
 - Control measure point symbols (set 25) were reported invalid.
