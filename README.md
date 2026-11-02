@@ -5,7 +5,7 @@ The point symbol renderer is a GDScript port of [milsymbol](https://github.com/s
 
 **Status:** in development, not released yet.
 
-![Tactical map demo](docs/images/tactical-map.png)
+![Tactical map demo](https://github.com/OWNER/godot-milsymbol/releases/latest/download/tactical-map.gif)
 
 ## Features
 - **Point symbols** from number based SIDCs (20 digits): units, equipment, installations, activities, point
@@ -48,11 +48,17 @@ arrow; meteorological and oceanographic symbol sets (45–47); mission task grap
 graphics beyond the generic depiction.
 
 ## Requirements
-- Godot 4.7.x (other 4.x versions are untested).
+- Godot 4.7.x, Windows or Linux tested; other versions and platforms are untested
+  ([compatibility](docs/compatibility.md)). Pure GDScript, so nothing to compile.
 
 ## Installation
-Copy `addons/milsymbol/` into your project's `addons/` folder. Enabling the plugin is optional; the classes are
-global (`MilSymbol`, `MilGraphic`, `TacticalMap2D`, ...).
+Download `godot-milsymbol-<version>.zip` from the [releases](https://github.com/OWNER/godot-milsymbol/releases)
+and extract it into your project folder; it contains `addons/milsymbol/`. Enabling the plugin is optional; the
+classes are global (`MilSymbol`, `MilGraphic`, `TacticalMap2D`, ...). From a clone, copy `addons/milsymbol/`
+instead.
+
+New to the add-on? [docs/getting-started.md](docs/getting-started.md) goes from an empty project to a map with
+units and control measures in about 15 minutes.
 
 ## Usage
 
@@ -115,10 +121,14 @@ Open the project in Godot and press F5 (`demo/main.tscn`). Tabs:
 ![Control measures gallery](docs/images/control-measures.png)
 
 ## Documentation
+- [docs/getting-started.md](docs/getting-started.md): first map in 15 minutes
 - [docs/tactical-map.md](docs/tactical-map.md): `TacticalMap2D`
 - [docs/control-measures.md](docs/control-measures.md): multipoint control measures
 - [docs/coverage.md](docs/coverage.md): point symbol coverage per standard and symbol set
+- [docs/compatibility.md](docs/compatibility.md): tested Godot versions and platforms
 - [docs/draw-instructions.md](docs/draw-instructions.md): milsymbol internals used by the port
+- [docs/media.md](docs/media.md): README pictures and how they are made
+- [CHANGELOG.md](CHANGELOG.md)
 
 ## Development
 Godot 4.7.x. Node.js is only needed for the data export tools in `tools/export/`.
@@ -137,6 +147,13 @@ npm run golden && npm run golden:bulk && npm run coverage
 godot --headless --path . -s res://tools/coverage_report.gd
 godot --headless --path . -s res://tools/control_measures_report.gd
 godot --headless --path . -s res://tools/graphics_golden.gd
+
+# Release zip (addons/milsymbol + LICENSE + notices), checked in a new empty project
+python tools/package_addon.py
+python tools/check_package.py build/package/godot-milsymbol-<version>.zip --godot <path to Godot>
+
+# README GIF, social preview and icon (Pillow; opens a window)
+python tools/capture_media.py --godot <path to Godot>
 
 # Screenshots and frame statistics of the map demo
 godot --path . res://demo/tactical_map.tscn -- --screenshot map.png

@@ -42,8 +42,17 @@ check. When you change a shape on purpose, look at `demo/graphics_gallery.tscn` 
 `godot --headless --path . -s res://tools/graphics_golden.gd` and update `docs/control-measures.md` with
 `tools/control_measures_report.gd`.
 
+## Releases (maintainers)
+1. Set the version in `addons/milsymbol/plugin.cfg`, move the `[Unreleased]` entries of `CHANGELOG.md` under the
+   new version and update [docs/compatibility.md](docs/compatibility.md).
+2. Locally: `python tools/package_addon.py` and `python tools/check_package.py build/package/godot-milsymbol-<version>.zip --godot <path>`
+   on Windows and Linux.
+3. Push a tag `v<version>`. CI runs the tests, builds and checks the zip (its version must match `plugin.cfg`) and
+   attaches it to the GitHub release with the `CHANGELOG.md` section as notes.
+4. Attach `tactical-map.gif` from `python tools/capture_media.py` to the release (see [docs/media.md](docs/media.md)).
+
 ## Style
-Languages: GDScript; JavaScript for the export tools.
+Languages: GDScript; JavaScript for the export tools; Python for the release and media tools.
 - **GDScript:** the [official style guide](https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_styleguide.html);
   tabs; static types everywhere; `##` documentation comments on public classes, properties and methods.
 - **C++:** the style of the existing sources and godot-cpp; tabs.

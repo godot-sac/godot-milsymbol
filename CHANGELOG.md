@@ -38,6 +38,13 @@ All notable changes to this project are documented here. Versions follow [semver
   measure labels are written as glyph outlines in PNG output.
 - Tactical map demo (`demo/tactical_map.tscn`, first tab of `demo/main.tscn`): a fictional brigade attack with
   units, control measures, debug keys and a 5,000-unit stress test (`-- --stress 5000`).
+- Release zip: `tools/package_addon.py` packs `addons/milsymbol/` with the licence and notices
+  (Asset Library layout), `tools/check_package.py` installs it into a new, empty project and uses it there.
+  CI checks the zip on every push and attaches it to the GitHub release of a `v*` tag.
+- `docs/getting-started.md`: from an empty project to a tactical map with units and control measures.
+- `docs/compatibility.md`: Godot versions and platforms that were actually tested.
+- Add-on icon (`icon.svg`, `docs/images/icon-256.png`); `tools/capture_media.py` makes the README GIF, the social
+  preview image and the icon PNG (`docs/media.md`).
 
 ### Fixed
 - Control measure point symbols (set 25) were reported invalid.

@@ -15,3 +15,6 @@ Thumbs.db
 
 # Downloaded sources (tools/export/legacy.mjs)
 tools/export/.cache/
+
+# Release packages (tools/package_addon.py)
+/build/

@@ -1,8 +1,11 @@
-# Runs the Godot (GUT) tests on Windows and Linux, then packs addons/milsymbol as one artifact.
+# Runs the Godot (GUT) tests on Windows and Linux, then packs addons/milsymbol as a zip and checks it in an empty
+# project. On a version tag (v0.1.0) the zip is attached to the GitHub release of that tag.
 name: CI
 
 on:
   push:
+    branches: ["**"]
+    tags: ["v*"]
   pull_request:
   workflow_dispatch:
 
@@ -44,14 +47,42 @@ jobs:
   package:
     name: Addon package
     needs: godot
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
-      - name: Assemble addons/milsymbol
+      - name: Download Godot
         run: |
-          cp LICENSE THIRD_PARTY_NOTICES.md addons/milsymbol/
-          find addons/milsymbol -type f | sort
+          curl -sSfL -o godot.zip "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
+          python3 -m zipfile -e godot.zip godot_bin
+          chmod +x "godot_bin/Godot_v${GODOT_VERSION}-stable_linux.x86_64"
+          echo "GODOT=$PWD/godot_bin/Godot_v${GODOT_VERSION}-stable_linux.x86_64" >> "$GITHUB_ENV"
+      - name: Pack
+        run: |
+          # On a tag the version must match plugin.cfg; otherwise plugin.cfg's version is used.
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            python3 tools/package_addon.py --version "${GITHUB_REF_NAME#v}"
+          else
+            python3 tools/package_addon.py
+          fi
+          echo "PACKAGE=$(ls build/package/godot-milsymbol-*.zip)" >> "$GITHUB_ENV"
+      - name: Check the package in an empty project
+        run: python3 tools/check_package.py "$PACKAGE" --godot "$GODOT"
       - uses: actions/upload-artifact@v4
         with:
           name: godot-milsymbol-addon
-          path: addons/milsymbol
+          path: build/package/*.zip
+      - name: Attach to the release
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          # Release notes: the CHANGELOG section of this version.
+          awk -v v="$version" '/^## \[/ { on = index($0, "[" v "]") > 0; next } on' CHANGELOG.md > notes.md
+          if gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" "$PACKAGE" --clobber
+          else
+            gh release create "$GITHUB_REF_NAME" "$PACKAGE" --title "godot-milsymbol $version" --notes-file notes.md
+          fi
