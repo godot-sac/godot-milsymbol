@@ -36,7 +36,9 @@ def addon_files() -> list[Path]:
         files = [ROOT / name for name in out.split("\0") if name]
     except (OSError, subprocess.CalledProcessError):
         files = [p for p in ADDON.rglob("*") if p.is_file()]
-    return sorted(p for p in files if p.is_file() and p.suffix not in SKIPPED_SUFFIXES)
+    # Sorted by the zip path (case-sensitive), so that Windows and Linux give the same zip.
+    return sorted((p for p in files if p.is_file() and p.suffix not in SKIPPED_SUFFIXES),
+                  key=lambda p: p.relative_to(ROOT).as_posix())
 
 
 def untracked_files() -> list[str]:
@@ -74,6 +76,7 @@ def main() -> int:
             info = zipfile.ZipInfo(name, ZIP_DATE)
             info.compress_type = zipfile.ZIP_DEFLATED
             info.external_attr = 0o644 << 16
+            info.create_system = 3  # Unix, also on Windows: the same zip everywhere
             archive.writestr(info, path.read_bytes())
     shown = target.relative_to(ROOT) if target.is_relative_to(ROOT) else target
     print(f"{shown.as_posix()}: {len(files)} files, {target.stat().st_size / 1e6:.2f} MB")
