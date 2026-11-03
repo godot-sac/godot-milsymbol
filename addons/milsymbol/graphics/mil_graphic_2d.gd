@@ -30,7 +30,7 @@ signal graphic_changed
 @export_range(0.5, 12.0, 0.5) var line_width: float = 2.0:
 	set(value):
 		line_width = value
-		queue_redraw()
+		_rebuild()  # hatch spacing depends on the line width
 ## Halo around lines and text for busy backgrounds. 0 = none.
 @export_range(0.0, 8.0, 0.5) var halo: float = 0.0:
 	set(value):

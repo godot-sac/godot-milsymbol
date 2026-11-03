@@ -197,3 +197,39 @@ func test_atlas_centres_the_anchor_and_grows() -> void:
 	atlas.commit()
 	assert_not_null(atlas.texture)
 	assert_eq(atlas.texture.get_size(), Vector2(atlas.image.get_size()))
+
+
+func test_map_works_across_the_antimeridian() -> void:
+	_map.center_on(-17.8, 179.95, 50.0)  # Fiji
+	_map.add_unit("W", FRIEND_INF, -17.8, 179.9)
+	_map.add_unit("E", HOSTILE_ARMOUR, -17.8, -179.9)
+	var west := _map.lat_lon_to_screen(-17.8, 179.9)
+	var east := _map.lat_lon_to_screen(-17.8, -179.9)
+	assert_lt(west.x, 400.0)
+	assert_gt(east.x, 400.0)
+	assert_lt(east.x - west.x, 500.0, "0.2° apart, not a world width")
+	# Drag east across the line: the centre wraps, the units stay next to each other on screen.
+	_drag(Vector2(400, 300), Vector2(200, 300))
+	assert_lt(_map.center_longitude, 0.0, "centre wrapped to the western hemisphere")
+	assert_almost_eq(_map.lat_lon_to_screen(-17.8, 179.9), west - Vector2(200, 0), Vector2(0.05, 0.05))
+	assert_almost_eq(_map.lat_lon_to_screen(-17.8, -179.9), east - Vector2(200, 0), Vector2(0.05, 0.05))
+	var ll := _map.screen_to_lat_lon(east - Vector2(200, 0))
+	assert_almost_eq(ll[1], -179.9, 1e-6)
+
+
+func test_plane_origin_follows_the_view() -> void:
+	_map.add_unit("A", FRIEND_INF, 38.9, -77.0)
+	_map.center_on(38.9, -77.0, 0.5)  # Washington, 8,000 km from the first centre, closest zoom
+	assert_lt(absf(_map._center_plane.x) + absf(_map._center_plane.y), 1.0, "origin moved to the view")
+	var east := -77.0 + 1.0 / (111320.0 * cos(deg_to_rad(38.9)))  # 1 m east
+	assert_almost_eq(_map.lat_lon_to_screen(38.9, east).x - _map.lat_lon_to_screen(38.9, -77.0).x, 2.0, 0.01)
+	assert_eq(_map.unit_at(Vector2(400, 300)), "A", "unit planes were moved with the origin")
+
+
+func test_symbol_size_before_entering_the_tree_applies_to_existing_units() -> void:
+	var map := TacticalMap2D.new()
+	map.add_unit("A", FRIEND_INF, 39.93, 32.86)
+	var small: Rect2 = map._units["A"].entry.bounds
+	map.symbol_size = 72.0
+	add_child_autofree(map)
+	assert_gt(map._units["A"].entry.bounds.size.x, small.size.x * 1.5)

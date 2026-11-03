@@ -269,3 +269,20 @@ func test_graphic_node_draws_its_shape() -> void:
 	add_child_autofree(node)
 	assert_true(node.shape.valid)
 	assert_eq(_text(node.shape, "PL RED").size(), 2)
+
+
+func test_graphic_node_line_width_changes_the_hatch_spacing() -> void:
+	var node := MilGraphic2D.new()
+	node.sidc = Cases.sidc("240301")
+	node.points = PackedVector2Array(Cases.AREA)
+	add_child_autofree(node)
+	var thin := _of_type(node.shape, "line").size()
+	node.line_width = 6.0
+	assert_lt(_of_type(node.shape, "line").size(), thin, "wider lines, fewer hatch lines")
+
+
+func test_version_15_uses_the_2525d_table_like_point_symbols() -> void:
+	var d := MilGraphic.build("10032500001403000000", PackedVector2Array([Vector2(0, 0), Vector2(100, 0)]))
+	var v15 := MilGraphic.build("15032500001403000000", PackedVector2Array([Vector2(0, 0), Vector2(100, 0)]))
+	assert_eq(v15.geometry, d.geometry)
+	assert_eq(v15.name, d.name)

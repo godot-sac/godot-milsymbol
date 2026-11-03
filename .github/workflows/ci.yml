@@ -1,5 +1,6 @@
 # Runs the Godot (GUT) tests on Windows and Linux, then packs addons/milsymbol as a zip and checks it in an empty
-# project. On a version tag (v0.1.0) the zip is attached to the GitHub release of that tag.
+# project. On a version tag (v0.1.0) the zip is attached to a draft GitHub release of that tag (published by hand
+# after the README GIF is uploaded, see docs/media.md).
 name: CI
 
 on:
@@ -84,5 +85,5 @@ jobs:
           if gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1; then
             gh release upload "$GITHUB_REF_NAME" "$PACKAGE" --clobber
           else
-            gh release create "$GITHUB_REF_NAME" "$PACKAGE" --title "godot-milsymbol $version" --notes-file notes.md
+            gh release create "$GITHUB_REF_NAME" "$PACKAGE" --draft --title "godot-milsymbol $version" --notes-file notes.md
           fi

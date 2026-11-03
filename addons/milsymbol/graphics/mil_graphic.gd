@@ -106,7 +106,8 @@ static func build(sidc: String, points: PackedVector2Array, amplifiers: Dictiona
 	var code := sidc.substr(10, 6)
 	shape.code = code
 
-	var standard := "E" if version in ["13", "14", "15", "16"] else ("A" if opts.standard == "APP6" else "D")
+	# Like the point symbols (MilSymbolSidc): versions 13 and 14 are 2525E, every other version 2525D / APP-6D.
+	var standard := "E" if version in ["13", "14"] else ("A" if opts.standard == "APP6" else "D")
 	var entry: Dictionary = _data().get(code, {})
 	shape.name = entry.get("name", "")
 	shape.geometry = entry.get(standard, entry.get("D", entry.get("E", entry.get("A", ""))))

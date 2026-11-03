@@ -138,3 +138,12 @@ func test_echelon_outline_is_drawn_on_the_frame_unless_quirks() -> void:
 	assert_true(fixed.svg.contains("translate(0,28)"), "outline and echelon both at the frame top (y = 28)")
 	assert_false(quirk.svg.contains("translate(0,28)") and quirk.svg.count("translate(0,28)") > 1)
 	assert_true(quirk.svg.contains("translate(0,0)"))
+
+
+func test_symbol_nodes_refresh_after_changes_made_outside_the_tree() -> void:
+	for node in [MilSymbolSprite2D.new(), MilSymbolSprite3D.new(), MilSymbolTextureRect.new()]:
+		add_child_autofree(node)
+		remove_child(node)
+		node.sidc = "10061000001211000000"  # hostile while detached
+		add_child(node)
+		assert_eq(node.symbol.sidc, "10061000001211000000", node.get_class())

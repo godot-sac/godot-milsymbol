@@ -198,7 +198,7 @@ func _unhandled_key_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and event.keycode == KEY_F12:
 		var path := "user://graphics_gallery_%d.png" % Time.get_unix_time_from_system()
 		_save_screenshot(path)
-		_info.text = "Saved %s" % ProjectSettings.globalize_path(path)
+		_info.text = "Saved %s" % path
 
 
 func _save_screenshot(path: String) -> void:

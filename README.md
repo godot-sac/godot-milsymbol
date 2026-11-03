@@ -3,7 +3,7 @@
 Military symbols (MIL-STD-2525D/E, APP-6D) and tactical graphics for Godot 4, with a 2D tactical map node.
 The point symbol renderer is a GDScript port of [milsymbol](https://github.com/spatialillusions/milsymbol).
 
-**Status:** in development, not released yet.
+**Status:** 0.1.0, the first release. Tested with Godot 4.7.2 on Windows and Linux; plans in [ROADMAP.md](ROADMAP.md).
 
 ![Tactical map demo](https://github.com/OWNER/godot-milsymbol/releases/latest/download/tactical-map.gif)
 
@@ -128,6 +128,7 @@ Open the project in Godot and press F5 (`demo/main.tscn`). Tabs:
 - [docs/compatibility.md](docs/compatibility.md): tested Godot versions and platforms
 - [docs/draw-instructions.md](docs/draw-instructions.md): milsymbol internals used by the port
 - [docs/media.md](docs/media.md): README pictures and how they are made
+- [ROADMAP.md](ROADMAP.md): what comes next
 - [CHANGELOG.md](CHANGELOG.md)
 
 ## Development
@@ -166,6 +167,7 @@ Bug reports, questions and pull requests are welcome. Please read [CONTRIBUTING.
 
 ## License
 MIT. Includes data derived from milsymbol and its standards data packages (MIT), glyph outlines from the
-Arimo font (OFL 1.1) and the 2525C to 2525D mapping from Esri joint-military-symbology-xml (Apache-2.0,
-`addons/milsymbol/LICENSE-APACHE-2.0.txt`); control measure shapes follow mil-sym-ts (Apache-2.0) as a
-reference. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+Arimo font (OFL 1.1, `addons/milsymbol/LICENSE-OFL-1.1.txt`) and the 2525C to 2525D mapping from Esri
+joint-military-symbology-xml (Apache-2.0, `addons/milsymbol/LICENSE-APACHE-2.0.txt`); control measure shapes
+follow mil-sym-ts (Apache-2.0) as a reference. Commercial use is allowed under these licences; keep the
+licence files of `addons/milsymbol/` with the add-on. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

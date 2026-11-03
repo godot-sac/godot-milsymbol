@@ -47,11 +47,12 @@ Copyright (c) 2018 Tom "Butch" Wesley
 
 ## Arimo font (glyph outlines in exported icon data)
 
-Icon text labels in `addons/milsymbol/data/icons_*.json` are stored as vector outlines generated from
-the Arimo font. The font itself is not distributed; it is a development dependency of `tools/export/`.
+Icon text labels in `addons/milsymbol/data/icons_*.json` and the glyph table for runtime labels
+(`addons/milsymbol/data/glyphs.json`) are vector outlines generated from the Arimo font. The font files
+themselves are not distributed; the font is a development dependency of `tools/export/`.
 
 - Source: https://github.com/googlefonts/arimo (via npm `@fontsource/arimo` 5.3.0)
-- License: SIL Open Font License 1.1
+- License: SIL Open Font License 1.1, full text in `addons/milsymbol/LICENSE-OFL-1.1.txt`
 
 ```
 Copyright 2020 The Arimo Project Authors (https://github.com/googlefonts/arimo)

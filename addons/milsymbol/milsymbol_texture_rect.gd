@@ -40,7 +40,8 @@ func _init() -> void:
 	expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 
 
-func _ready() -> void:
+# Also after re-entering the tree: changes made while outside it are not queued.
+func _enter_tree() -> void:
 	refresh()
 
 

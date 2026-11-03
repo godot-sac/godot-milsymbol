@@ -2,7 +2,7 @@
 
 All notable changes to this project are documented here. Versions follow [semver](https://semver.org/).
 
-## [Unreleased]
+## [0.1.0] - Unreleased
 ### Added
 - Number-based SIDC parsing (MIL-STD-2525D/E, APP-6D) and frames for every dimension, in all standard identities,
   colour modes, fill and outline styles.
@@ -28,7 +28,8 @@ All notable changes to this project are documented here. Versions follow [semver
 - Control measure gallery demo (`demo/graphics_gallery.tscn`).
 - `TacticalMap2D`: reusable 2D tactical map control (Web Mercator, latitude/longitude grid, scale bar, pan and
   zoom at the cursor, named layers, click / Shift-click / box selection, unit labels, control measures with
-  distances in metres). Unit symbols are packed into a `MilSymbolAtlas` texture and drawn with one MultiMesh per
+  distances in metres). The plane origin follows the view, so it works anywhere on Earth and across the
+  antimeridian. Unit symbols are packed into a `MilSymbolAtlas` texture and drawn with one MultiMesh per
   layer: 20,000 static units cost 0.33 ms per frame, 5,000 units moving every frame 8.6 ms (RTX 4080, Windows).
 - Letter based MIL-STD-2525C SIDCs: `MilSymbolLegacy` converts them to 2525D using Esri's
   joint-military-symbology-xml mapping table (Apache-2.0); `MilSymbol.render()` and `MilGraphic.build()` accept

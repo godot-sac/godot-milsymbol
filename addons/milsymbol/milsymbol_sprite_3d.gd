@@ -48,7 +48,8 @@ func _init() -> void:
 	pixel_size = 0.01
 
 
-func _ready() -> void:
+# Also after re-entering the tree: changes made while outside it are not queued.
+func _enter_tree() -> void:
 	refresh()
 
 

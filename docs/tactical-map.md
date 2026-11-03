@@ -30,8 +30,10 @@ map.selection_changed.connect(func(ids: Array) -> void: print(ids))
 - `meters_per_pixel` is the ground resolution at the map centre. The Mercator scale is kept while panning, so
   this value changes with the centre latitude; `meters_per_pixel_at(latitude)` gives it for any latitude.
 - `lat_lon_to_screen(latitude, longitude) -> Vector2` and `screen_to_lat_lon(position) -> PackedFloat64Array`
-  convert to and from the control's local pixels. Internally positions are kept relative to a plane origin in
-  64-bit floats, so 32-bit `Vector2` precision is not a problem within a few thousand kilometres.
+  convert to and from the control's local pixels. Internally positions are kept relative to a plane origin
+  that follows the view (it moves when the centre is more than 1,000 km away), so 32-bit `Vector2` precision
+  is not a problem anywhere. Longitudes are taken within ±180° of that origin: the map works across the
+  antimeridian (`zoom_to_content()` and `zoom_to()` expect a box that does not cross it).
 
 ## Units
 

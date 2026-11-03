@@ -23,6 +23,9 @@ signal view_changed
 const EARTH_RADIUS := 6378137.0
 const MAX_LATITUDE := 85.0511287798
 const DEFAULT_LAYER := "default"
+## The plane origin follows the view when the centre is farther than this (metres) from it, so that 32-bit
+## Vector2 plane positions stay precise anywhere on Earth.
+const REORIGIN_DISTANCE := 1000000.0
 const GRID_STEPS_DEG := [30.0, 20.0, 10.0, 5.0, 2.0, 1.0, 0.5, 1.0 / 4.0, 1.0 / 6.0, 1.0 / 12.0, 1.0 / 30.0,
 		1.0 / 60.0, 1.0 / 120.0, 1.0 / 240.0, 1.0 / 360.0, 1.0 / 720.0, 1.0 / 1800.0, 1.0 / 3600.0]
 const SYMBOL_SHADER := """
@@ -113,8 +116,8 @@ var drawn_graphics: int:
 			total += layer.drawn
 		return total
 
-var _origin_x := 0.0  # Web Mercator metres of the plane origin (GDScript floats are doubles)
-var _origin_y := 0.0
+var _origin_longitude := 0.0  # plane origin; longitudes are taken within ±180° of it (antimeridian)
+var _origin_y := 0.0  # Web Mercator metres of the origin latitude (GDScript floats are doubles)
 var _center_plane := Vector2.ZERO
 var _mpp := 50.0 / cos(deg_to_rad(39.93))  # Web Mercator metres per pixel
 var _view_version := 0
@@ -474,11 +477,13 @@ func _draw_grid() -> void:
 		step = candidate
 	var label_color := Color(text_color, 0.6)
 	var lon := floorf(top_left[1] / step) * step
-	while lon <= bottom_right[1] + step:
+	# Unwrapped east edge, so that a view across the antimeridian still gets its meridians.
+	var east := top_left[1] + wrapf(bottom_right[1] - top_left[1], 0.0, 360.0)
+	while lon <= east + step:
 		var x := lat_lon_to_screen(center_latitude, lon).x
 		draw_line(Vector2(x, 0), Vector2(x, size.y), grid_color)
-		draw_string(font, Vector2(x + 3, 13), _format_angle(lon, "E", "W", step), HORIZONTAL_ALIGNMENT_LEFT,
-				-1, 11, label_color)
+		draw_string(font, Vector2(x + 3, 13), _format_angle(wrapf(lon, -180.0, 180.0), "E", "W", step),
+				HORIZONTAL_ALIGNMENT_LEFT, -1, 11, label_color)
 		lon += step
 	var lat := floorf(bottom_right[0] / step) * step
 	while lat <= top_left[0] + step:
@@ -515,7 +520,7 @@ func _draw_layer_graphics(layer: Dictionary) -> void:
 			if amplifiers.has("AM") and not graphic.points.is_empty():
 				amplifiers = amplifiers.duplicate()
 				amplifiers.AM = float(amplifiers.AM) / meters_per_pixel_at(graphic.points[0].y)
-			graphic.shape = MilGraphic.build(graphic.sidc, points, amplifiers)
+			graphic.shape = MilGraphic.build(graphic.sidc, points, amplifiers, {"line_width": graphic_line_width})
 			graphic.version = _view_version
 		MilGraphicRenderer.draw(node, graphic.shape, style)
 		layer.drawn += 1
@@ -761,8 +766,6 @@ func _resize_multimesh(layer: Dictionary, count: int) -> void:
 
 
 func _restyle_units() -> void:
-	if not is_node_ready():
-		return
 	_atlas.clear()
 	for id in _units:
 		var unit: Dictionary = _units[id]
@@ -818,23 +821,32 @@ func _make_quad() -> ArrayMesh:
 ## absolute Mercator values are subtracted before converting to 32-bit Vector2.
 func _to_plane(latitude: float, longitude: float) -> Vector2:
 	var lat := deg_to_rad(clampf(latitude, -MAX_LATITUDE, MAX_LATITUDE))
-	var x := EARTH_RADIUS * deg_to_rad(longitude) - _origin_x
+	var x := EARTH_RADIUS * deg_to_rad(wrapf(longitude - _origin_longitude, -180.0, 180.0))
 	var y := EARTH_RADIUS * log(tan(PI / 4.0 + lat / 2.0)) - _origin_y
 	return Vector2(x, -y)
 
 
 func _plane_to_lat_lon(p: Vector2) -> PackedFloat64Array:
-	var x := float(p.x) + _origin_x
 	var y := -float(p.y) + _origin_y
-	var longitude := rad_to_deg(x / EARTH_RADIUS)
+	var longitude := wrapf(_origin_longitude + rad_to_deg(float(p.x) / EARTH_RADIUS), -180.0, 180.0)
 	var latitude := rad_to_deg(2.0 * atan(exp(y / EARTH_RADIUS)) - PI / 2.0)
 	return PackedFloat64Array([latitude, longitude])
 
 
 func _set_origin(latitude: float, longitude: float) -> void:
-	var lat := deg_to_rad(latitude)
-	_origin_x = EARTH_RADIUS * deg_to_rad(longitude)
+	var lat := deg_to_rad(clampf(latitude, -MAX_LATITUDE, MAX_LATITUDE))
+	_origin_longitude = longitude
 	_origin_y = EARTH_RADIUS * log(tan(PI / 4.0 + lat / 2.0))
+
+
+## Moves the plane origin to the view centre and recomputes every unit's plane position.
+func _move_origin() -> void:
+	_set_origin(center_latitude, center_longitude)
+	_center_plane = _to_plane(center_latitude, center_longitude)
+	for id in _units:
+		var unit: Dictionary = _units[id]
+		unit.plane = _to_plane(unit.latitude, unit.longitude)
+		unit.layer_ref.multimesh.set_instance_transform_2d(unit.index, _instance_transform(unit))
 
 
 func _plane_to_screen(p: Vector2) -> Vector2:
@@ -847,6 +859,8 @@ func _screen_to_plane(s: Vector2) -> Vector2:
 
 func _update_center() -> void:
 	_center_plane = _to_plane(center_latitude, center_longitude)
+	if absf(_center_plane.x) > REORIGIN_DISTANCE or absf(_center_plane.y) > REORIGIN_DISTANCE:
+		_move_origin()
 	_update_view()
 
 
