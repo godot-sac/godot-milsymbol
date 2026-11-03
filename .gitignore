@@ -1,6 +1,6 @@
 # Godot
 .godot/
-*.import
+# *.import files are tracked: they hold the resource UIDs that scenes refer to.
 export_presets.cfg
 /android/
 
