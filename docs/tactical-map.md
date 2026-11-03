@@ -61,6 +61,20 @@ culled when off screen. Colours come from `graphic_palette` (`MilGraphicRenderer
 `add_layer(name)` adds a layer on top; `set_layer_visible(name, visible)`, `is_layer_visible`,
 `get_layer_names()`. Each layer draws its control measures under its units; later layers are on top. Hidden
 layers are not hit by clicks and their units leave the selection. A `"default"` layer always exists.
+`add_unit` and `add_graphic` create a layer they are given that does not exist yet (on top), so add your
+layers first to set their order and check layer names for typos.
+
+## Invalid input
+
+An invalid unit SIDC is drawn as a small placeholder and a control measure that cannot be built (wrong symbol
+set, too few points) is not drawn; each prints one warning (`push_warning`) the first time. Check a SIDC
+beforehand with `MilSymbol.render(sidc).valid` or `MilGraphic.build(...).valid` / `.errors`.
+
+## Threads
+
+The map, like every Godot node, is used from the main thread. When positions arrive on a network or worker
+thread, hand them over with `call_deferred` (for example `map.move_unit.call_deferred(id, lat, lon)`) or a
+queue that `_process` drains.
 
 ## Input and signals
 

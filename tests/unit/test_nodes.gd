@@ -147,3 +147,9 @@ func test_symbol_nodes_refresh_after_changes_made_outside_the_tree() -> void:
 		node.sidc = "10061000001211000000"  # hostile while detached
 		add_child(node)
 		assert_eq(node.symbol.sidc, "10061000001211000000", node.get_class())
+
+
+func test_non_positive_size_is_invalid() -> void:
+	assert_false(MilSymbol.render(INFANTRY, {"size": -5}).valid)
+	assert_false(MilSymbol.render(INFANTRY, {"size": "big"}).valid)
+	assert_true(MilSymbol.render(INFANTRY, {"size": 40}).valid)

@@ -239,7 +239,8 @@ static func render(sidc: String, options: Dictionary = {}) -> MilSymbolRender:
 	result.size = base_size * scale
 	result.anchor = (anchor - Vector2(bbox.x1, bbox.y1) + Vector2(margin, margin)) * scale
 	result.draw_instructions = instructions
-	result.valid = _is_valid(metadata) and state.valid_icon and not _contains_null(instructions)
+	result.valid = (_is_valid(metadata) and state.valid_icon and not _contains_null(instructions)
+			and style.size > 0.0)
 	var view_box := Rect2(bbox.x1 - margin, bbox.y1 - margin, base_size.x, base_size.y)
 	result.svg = MilSymbolSvgWriter.write(instructions, style, view_box, result.size)
 	return result

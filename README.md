@@ -33,10 +33,11 @@ The point symbol renderer is a GDScript port of [milsymbol](https://github.com/s
 Other multipoint control measure codes are drawn as a plain line or area with their designation.
 
 **2525C letter SIDCs** are converted with Esri's legacy mapping table (1,920 entries): all warfighting (801),
-signals intelligence (85) and stability operations (60) symbols, 205 of 206 emergency management symbols and
-424 of 430 tactical graphics convert to a symbol that is drawn; meteorological symbols convert but are not
-drawn. Symbols retired in 2525D fall back to their parent symbol. The 2525D icon is used, which for a few
-symbols looks different from the 2525C one.
+signals intelligence (85) and stability operations (60) symbols, 205 of 206 emergency management symbols and 424
+of 430 tactical graphics convert to a symbol that is drawn; meteorological symbols convert but are not drawn.
+Symbols retired in 2525D fall back to their parent symbol. A wildcard identity (`G*GP...`) is drawn as unknown
+(yellow); put the affiliation letter in the code to get friend or hostile colours. The 2525D icon is used, which
+for a few symbols looks different from the 2525C one.
 
 **SIDC versions:** like milsymbol, version digits 10–12 use the 2525D tables and 13–14 the 2525E tables; other
 version digits are drawn with the 2525D tables. **APP-6(E)** (in effect since 2025-10-16) is not verified: none

@@ -108,7 +108,7 @@ void vertex() {
 		selection_color = value
 		_queue_overlay()
 
-## Number of control measures drawn in the last redraw of every layer (after culling), for statistics.
+## Number of control measures drawn in the last redraw of every layer (after culling, valid ones only).
 var drawn_graphics: int:
 	get:
 		var total := 0
@@ -138,6 +138,7 @@ var _box_selecting := false
 var _drag_current := Vector2.ZERO
 var _commit_queued := false
 var _cursor_lat_lon := PackedFloat64Array()
+var _warned := {}  # invalid SIDCs / graphic ids already reported
 
 
 func _init() -> void:
@@ -281,6 +282,7 @@ func add_unit(id: Variant, sidc: String, latitude: float, longitude: float, labe
 		remove_unit(id)
 	add_layer(layer_name)
 	var layer: Dictionary = _layer(layer_name)
+	_warn_if_invalid(sidc)
 	var unit := {"sidc": sidc, "latitude": latitude, "longitude": longitude, "label": label, "layer": layer_name,
 			"layer_ref": layer, "plane": _to_plane(latitude, longitude),
 			"entry": _atlas.get_entry(sidc, _symbol_options()), "index": layer.ids.size()}
@@ -314,6 +316,7 @@ func set_unit_sidc(id: Variant, sidc: String) -> void:
 	if unit.is_empty() or unit.sidc == sidc:
 		return
 	unit.sidc = sidc
+	_warn_if_invalid(sidc)
 	unit.entry = _atlas.get_entry(sidc, _symbol_options())
 	_write_instance(unit.layer_ref.multimesh, unit)
 	_queue_commit()
@@ -422,6 +425,7 @@ func add_graphic(id: Variant, sidc: String, points: PackedVector2Array, amplifie
 		layer_name: String = DEFAULT_LAYER) -> void:
 	if _graphics.has(id):
 		remove_graphic(id)
+	_warned.erase(["graphic", id])
 	add_layer(layer_name)
 	_graphics[id] = {"sidc": sidc, "points": points, "amplifiers": amplifiers, "layer": layer_name, "shape": null,
 			"version": -1}
@@ -522,7 +526,14 @@ func _draw_layer_graphics(layer: Dictionary) -> void:
 				amplifiers.AM = float(amplifiers.AM) / meters_per_pixel_at(graphic.points[0].y)
 			graphic.shape = MilGraphic.build(graphic.sidc, points, amplifiers, {"line_width": graphic_line_width})
 			graphic.version = _view_version
-		MilGraphicRenderer.draw(node, graphic.shape, style)
+		var shape: MilGraphicShape = graphic.shape
+		if not shape.valid:
+			if not _warned.has(["graphic", id]):
+				_warned[["graphic", id]] = true
+				push_warning("TacticalMap2D: control measure %s (%s) is not drawn: %s" % [id, graphic.sidc,
+						"; ".join(shape.errors)])
+			continue
+		MilGraphicRenderer.draw(node, shape, style)
 		layer.drawn += 1
 
 
@@ -734,6 +745,12 @@ func _layer(layer_name: String) -> Variant:
 		if layer.name == layer_name:
 			return layer
 	return null
+
+
+func _warn_if_invalid(sidc: String) -> void:
+	if not _warned.has(sidc) and not MilSymbol.render_cached(sidc, _symbol_options()).valid:
+		_warned[sidc] = true
+		push_warning("TacticalMap2D: %s is not a valid SIDC; the unit is drawn as a placeholder" % sidc)
 
 
 func _symbol_options() -> Dictionary:

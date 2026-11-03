@@ -233,3 +233,11 @@ func test_symbol_size_before_entering_the_tree_applies_to_existing_units() -> vo
 	map.symbol_size = 72.0
 	add_child_autofree(map)
 	assert_gt(map._units["A"].entry.bounds.size.x, small.size.x * 1.5)
+
+
+func test_invalid_graphics_are_not_counted_as_drawn() -> void:
+	_map.add_graphic("ok", "10032500001403000000", PackedVector2Array([Vector2(32.80, 39.95), Vector2(32.90, 39.95)]))
+	_map.add_graphic("one point", "10032500001403000000", PackedVector2Array([Vector2(32.85, 39.93)]))
+	await wait_frames(2)
+	assert_eq(_map.drawn_graphics, 1)
+	assert_false(_map.get_graphic_shape("one point").valid)
