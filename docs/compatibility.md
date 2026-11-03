@@ -6,8 +6,8 @@ package check below).
 
 | godot-milsymbol | Godot | Platform | Tests (GUT) | Package in an empty project | Demo | Checked on |
 |---|---|---|---|---|---|---|
-| 0.1.0 | 4.7.2 stable | Windows 11, x86_64 (Vulkan, NVIDIA) | ✓ 95/95 | ✓ | ✓ every demo scene; windowed, media capture | 2026-11-03 |
-| 0.1.0 | 4.7.2 stable | Linux: Ubuntu 24.04 in WSL2, x86_64 | ✓ 95/95 | ✓ | ✓ every demo scene headless; getting-started guide windowed under WSLg (software Vulkan) | 2026-11-03 |
+| 0.1.0 | 4.7.2 stable | Windows 11, x86_64 (Vulkan, NVIDIA) | ✓ 97/97 | ✓ | ✓ every demo scene; windowed, media capture | 2026-11-03 |
+| 0.1.0 | 4.7.2 stable | Linux: Ubuntu 24.04 in WSL2, x86_64 | ✓ 97/97 | ✓ | ✓ every demo scene headless; getting-started guide windowed under WSLg (software Vulkan) | 2026-11-03 |
 | 0.1.0 | 4.7.2 stable | Windows (`windows-latest`), Linux (`ubuntu-22.04`) in CI | configured, not run yet | configured (Linux) | – | – |
 | any | 4.3 – 4.6 | any | not tested | not tested | not tested | – |
 | any | any | macOS, Android, iOS, Web | not tested | not tested | not tested | – |
