@@ -6,7 +6,7 @@ The point symbol renderer is a GDScript port of [milsymbol](https://github.com/s
 **Status:** 0.1.0, the first release. Tested with Godot 4.7.2 on Windows and Linux; plans in [ROADMAP.md](ROADMAP.md).
 Part of [Godot SAC](https://github.com/godot-sac): stand-alone add-ons for terrain, military symbology, DIS and flight dynamics that also work together.
 
-![Tactical map demo](https://github.com/godot-sac/godot-milsymbol/releases/latest/download/tactical-map.gif)
+![Tactical map demo: unit symbols and control measures on a map](docs/images/tactical-map.png)
 
 ## Features
 - **Point symbols** from number based SIDCs (20 digits): units, equipment, installations, activities, point
