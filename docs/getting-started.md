@@ -17,7 +17,7 @@ a valid project.
 ## 2. Install the add-on (2 minutes)
 
 1. Download `godot-milsymbol-<version>.zip` from the
-   [releases page](https://github.com/OWNER/godot-milsymbol/releases).
+   [releases page](https://github.com/godot-sac/godot-milsymbol/releases).
 2. Extract it into the **project folder** (the folder with `project.godot`). The zip already contains the
    `addons/` folder, so afterwards you have:
 

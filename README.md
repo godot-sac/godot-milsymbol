@@ -4,8 +4,9 @@ Military symbols (MIL-STD-2525D/E, APP-6D) and tactical graphics for Godot 4, wi
 The point symbol renderer is a GDScript port of [milsymbol](https://github.com/spatialillusions/milsymbol).
 
 **Status:** 0.1.0, the first release. Tested with Godot 4.7.2 on Windows and Linux; plans in [ROADMAP.md](ROADMAP.md).
+Part of [Godot SAC](https://github.com/godot-sac): stand-alone add-ons for terrain, military symbology, DIS and flight dynamics that also work together.
 
-![Tactical map demo](https://github.com/OWNER/godot-milsymbol/releases/latest/download/tactical-map.gif)
+![Tactical map demo](https://github.com/godot-sac/godot-milsymbol/releases/latest/download/tactical-map.gif)
 
 ## Features
 - **Point symbols** from number based SIDCs (20 digits): units, equipment, installations, activities, point
@@ -53,7 +54,7 @@ graphics beyond the generic depiction.
   ([compatibility](docs/compatibility.md)). Pure GDScript, so nothing to compile.
 
 ## Installation
-Download `godot-milsymbol-<version>.zip` from the [releases](https://github.com/OWNER/godot-milsymbol/releases)
+Download `godot-milsymbol-<version>.zip` from the [releases](https://github.com/godot-sac/godot-milsymbol/releases)
 and extract it into your project folder; it contains `addons/milsymbol/`. Enabling the plugin is optional; the
 classes are global (`MilSymbol`, `MilGraphic`, `TacticalMap2D`, ...). From a clone, copy `addons/milsymbol/`
 instead.
