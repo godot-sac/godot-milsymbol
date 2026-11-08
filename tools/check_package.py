@@ -38,6 +38,8 @@ func _initialize() -> void:
 	var render := MilSymbol.render("10031000161211000000")
 	_check(render.valid and render.to_image() != null, "MilSymbol.render")
 	_check(MilSymbol.create_texture("SFGPUCI----D---", {"size": 40}) != null, "2525C letter SIDC texture")
+	var labelled := MilSymbol.render("10031000161211000000", {"uniqueDesignation": "A/1-32", "direction": 45})
+	_check(labelled.valid and labelled.size.x > render.size.x and labelled.to_image() != null, "text amplifiers")
 	var shape := MilGraphic.build("10032500001403000000",
 			PackedVector2Array([Vector2(0, 0), Vector2(300, 20)]), {"T": "BLUE"})
 	_check(shape != null and shape.valid, "MilGraphic.build")
