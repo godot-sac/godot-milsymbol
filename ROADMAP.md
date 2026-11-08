@@ -7,11 +7,9 @@ symbol nodes, 2525C letter SIDC conversion and SVG / PNG export are in place. Te
 Windows and Linux ([compatibility](docs/compatibility.md)).
 
 ## Next (0.2)
-- Text amplifier fields around point symbols (unique designation, higher formation, speed, ...) and the
-  direction of movement arrow.
 - Own geometry for more multipoint control measures (today 76 of 271 2525D codes; the rest are drawn as a
   generic line or area): mission task graphics, remaining fire support and protection graphics.
-- Try Godot 4.3–4.6 and the Compatibility / Mobile renderers; macOS.
+- Try the Compatibility / Mobile renderers and macOS.
 - Submit the add-on to the Godot Asset Library.
 
 ## Later

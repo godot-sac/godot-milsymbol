@@ -284,8 +284,9 @@ func add_unit(id: Variant, sidc: String, latitude: float, longitude: float, labe
 	var layer: Dictionary = _layer(layer_name)
 	_warn_if_invalid(sidc)
 	var unit := {"sidc": sidc, "latitude": latitude, "longitude": longitude, "label": label, "layer": layer_name,
-			"layer_ref": layer, "plane": _to_plane(latitude, longitude),
-			"entry": _atlas.get_entry(sidc, _symbol_options()), "index": layer.ids.size()}
+			"layer_ref": layer, "plane": _to_plane(latitude, longitude), "amplifiers": {},
+			"index": layer.ids.size()}
+	unit.entry = _atlas.get_entry(sidc, _unit_options(unit))
 	_units[id] = unit
 	layer.ids.append(id)
 	var multimesh: MultiMesh = layer.multimesh
@@ -317,10 +318,29 @@ func set_unit_sidc(id: Variant, sidc: String) -> void:
 		return
 	unit.sidc = sidc
 	_warn_if_invalid(sidc)
-	unit.entry = _atlas.get_entry(sidc, _symbol_options())
+	unit.entry = _atlas.get_entry(sidc, _unit_options(unit))
 	_write_instance(unit.layer_ref.multimesh, unit)
 	_queue_commit()
 	_queue_overlay()
+
+
+## Text amplifier fields and the direction of movement drawn with the unit's symbol, as MilSymbol options:
+## {"uniqueDesignation": "A/1-32", "higherFormation": "3 BDE", "speed": "15 KPH", "direction": 45.0, ...}.
+## Every distinct combination is a new symbol in the map's texture atlas, which is never trimmed while the map
+## lives: use it for values that change rarely, not for a heading updated every frame.
+func set_unit_amplifiers(id: Variant, amplifiers: Dictionary) -> void:
+	var unit: Dictionary = _units.get(id, {})
+	if unit.is_empty() or unit.amplifiers == amplifiers:
+		return
+	unit.amplifiers = amplifiers.duplicate()
+	unit.entry = _atlas.get_entry(unit.sidc, _unit_options(unit))
+	_write_instance(unit.layer_ref.multimesh, unit)
+	_queue_commit()
+	_queue_overlay()
+
+
+func get_unit_amplifiers(id: Variant) -> Dictionary:
+	return _units.get(id, {}).get("amplifiers", {}).duplicate()
 
 
 func set_unit_label(id: Variant, label: String) -> void:
@@ -759,6 +779,12 @@ func _symbol_options() -> Dictionary:
 	return options
 
 
+func _unit_options(unit: Dictionary) -> Dictionary:
+	var options := _symbol_options()
+	options.merge(unit.amplifiers, true)
+	return options
+
+
 func _instance_transform(unit: Dictionary) -> Transform2D:
 	var entry: Dictionary = unit.entry
 	if entry.is_empty():
@@ -786,7 +812,7 @@ func _restyle_units() -> void:
 	_atlas.clear()
 	for id in _units:
 		var unit: Dictionary = _units[id]
-		unit.entry = _atlas.get_entry(unit.sidc, _symbol_options())
+		unit.entry = _atlas.get_entry(unit.sidc, _unit_options(unit))
 		_write_instance(unit.layer_ref.multimesh, unit)
 	_queue_commit()
 	_queue_overlay()

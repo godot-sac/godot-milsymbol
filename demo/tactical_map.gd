@@ -2,7 +2,7 @@ extends Control
 ## TacticalMap2D demo: a fictional brigade attack east of Ankara with units and control measures.
 ##
 ## Keys: G grid, 1-4 layer on/off, M movement on/off, N 5000-unit stress test on/off, F fit to content,
-## L labels, D light/dark map, F12 screenshot (user://), H help. Mouse: wheel zoom, drag pan, click select,
+## A text amplifiers on/off, L labels, D light/dark map, F12 screenshot (user://), H help. Mouse: wheel zoom, drag pan, click select,
 ## Shift-drag box select.
 ## Command line (after --): --screenshot <file.png> [--seconds <s>] saves a picture and quits; --stress <n> starts
 ## with n extra moving units; --static starts with movement off; --seconds alone quits after s seconds and
@@ -33,6 +33,18 @@ const UNITS: Array[Array] = [
 	["E6", "10061002181211000000", 21.0, 6.0, "", "Hostile", [], 0.0],
 	["E7", "10061500001101000000", 13.0, -1.5, "", "Hostile", [], 0.0],
 ]
+
+# Text amplifier fields and direction of movement, shown with A. Static units only: every distinct combination is
+# a new symbol in the map's atlas.
+const AMPLIFIERS := {
+	"1BDE": {"uniqueDesignation": "1", "higherFormation": "1 DIV", "headquartersElement": "MAIN"},
+	"1-3": {"uniqueDesignation": "1-3", "higherFormation": "1 BDE", "reinforcedReduced": "(-)",
+		"combatEffectiveness": "FC"},
+	"1-FA": {"uniqueDesignation": "1-4", "higherFormation": "1 BDE", "type": "M109", "direction": 80.0},
+	"E1": {"uniqueDesignation": "21", "evaluationRating": "B2", "dtg": "081200ZNOV26", "direction": 260.0},
+	"E6": {"uniqueDesignation": "4", "higherFormation": "9 DIV", "staffComments": "MAIN CP"},
+	"E7": {"type": "T-72", "quantity": "6", "direction": 280.0},
+}
 
 # Control measures: id, entity code, identity, points (east/north km), amplifiers (AM in metres), echelon
 const GRAPHICS: Array[Array] = [
@@ -65,6 +77,7 @@ var _info: Label
 var _help: Label
 var _routes := {}  # unit id -> {"route": PackedVector2Array (km), "speed": km/h, "distance": km}
 var _moving := true
+var _amplifiers := true
 var _stress_ids: Array = []
 var _stress_position := PackedVector2Array()  # longitude, latitude
 var _stress_velocity := PackedVector2Array()
@@ -96,6 +109,7 @@ func _ready() -> void:
 		_map.add_unit(def[0], def[1], p.y, p.x, def[4], def[5])
 		if not def[6].is_empty():
 			_routes[def[0]] = {"route": PackedVector2Array(def[6]), "speed": def[7], "distance": 0.0}
+	_show_amplifiers(_amplifiers)
 	_map.selection_changed.connect(_on_selection_changed)
 	_map.map_clicked.connect(func(lat: float, lon: float, _button: int) -> void:
 		_info.tooltip_text = "%.5f, %.5f" % [lat, lon])
@@ -141,7 +155,7 @@ func _build_hud() -> void:
 	_info = Label.new()
 	box.add_child(_info)
 	_help = Label.new()
-	_help.text = ("G grid · 1-4 layers · M movement · N 5000 units · F fit · L labels · D light/dark\n"
+	_help.text = ("G grid · 1-4 layers · M movement · N 5000 units · F fit · A amplifiers · L labels · D light/dark\n"
 			+ "Wheel zoom · drag pan · click select · Shift-drag box select · F12 screenshot · H help")
 	box.add_child(_help)
 
@@ -227,6 +241,14 @@ func _on_selection_changed(ids: Array) -> void:
 		print("selected ", ids[0], " ", _map.get_unit(ids[0]))
 
 
+func _show_amplifiers(on: bool) -> void:
+	# milsymbol draws the fields in the icon colour (black); use a light colour on the dark map.
+	var dark := _map.background_color.v < 0.5
+	var color := {"infoColor": "rgb(230, 230, 230)" if dark else "rgb(20, 20, 20)"}
+	for id in AMPLIFIERS:
+		_map.set_unit_amplifiers(id, AMPLIFIERS[id].merged(color) if on else {})
+
+
 func _unhandled_key_input(event: InputEvent) -> void:
 	if not (event is InputEventKey and event.pressed and not event.echo):
 		return
@@ -248,6 +270,9 @@ func _unhandled_key_input(event: InputEvent) -> void:
 			_toggle_stress()
 		KEY_F:
 			_map.zoom_to_content()
+		KEY_A:
+			_amplifiers = not _amplifiers
+			_show_amplifiers(_amplifiers)
 		KEY_L:
 			_map.show_labels = not _map.show_labels
 		KEY_D:
@@ -256,6 +281,7 @@ func _unhandled_key_input(event: InputEvent) -> void:
 			_map.grid_color = Color(0, 0, 0, 0.15) if light else Color(1, 1, 1, 0.12)
 			_map.text_color = Color(0.1, 0.1, 0.1, 0.85) if light else Color(1, 1, 1, 0.75)
 			_map.graphic_palette = MilGraphicRenderer.PALETTE_LIGHT_MAP if light else MilGraphicRenderer.PALETTE_DARK_MAP
+			_show_amplifiers(_amplifiers)
 		KEY_H:
 			_help.visible = not _help.visible
 		KEY_F12:

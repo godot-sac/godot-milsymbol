@@ -19,6 +19,13 @@ signal symbol_changed
 	set(value):
 		symbol_size = value
 		_queue_refresh()
+## Text amplifier fields and direction of movement for this symbol, as MilSymbol options, for example
+## {"uniqueDesignation": "A/1-32", "higherFormation": "3 BDE", "speed": "15 KPH", "direction": 45.0}.
+## See docs/amplifiers.md for every field and where it is drawn.
+@export var amplifiers: Dictionary = {}:
+	set(value):
+		amplifiers = value
+		_queue_refresh()
 ## Rendering options; share one style between many symbols.
 @export var style: MilSymbolStyle:
 	set(value):
@@ -50,6 +57,7 @@ func refresh() -> void:
 	_refresh_queued = false
 	var options := style.to_options() if style else {}
 	options.size = symbol_size
+	options.merge(amplifiers, true)
 	symbol = MilSymbol.render_cached(sidc, options)
 	texture = MilSymbol.create_texture(sidc, options)
 	custom_minimum_size = symbol.size.ceil()

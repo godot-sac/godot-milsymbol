@@ -769,5 +769,370 @@
       "x": 59,
       "y": 54
     }
+  },
+  {
+    "id": "tf_ground_unit_all",
+    "sidc": "10031000001211000000",
+    "options": {
+      "uniqueDesignation": "A/1-32",
+      "higherFormation": "3 BDE",
+      "staffComments": "FWD",
+      "additionalInformation": "RECON",
+      "quantity": "12",
+      "reinforcedReduced": "(+)",
+      "dtg": "301200ZNOV26",
+      "altitudeDepth": "120 M",
+      "location": "38SMB4488",
+      "speed": "15 KPH",
+      "type": "M1A2",
+      "evaluationRating": "A1",
+      "combatEffectiveness": "FC",
+      "signatureEquipment": "!",
+      "hostile": "ENY",
+      "iffSif": "M1 1234"
+    },
+    "description": "Text fields: friendly infantry unit, every land field",
+    "valid": true,
+    "width": 1042,
+    "height": 216,
+    "anchor": {
+      "x": 489.66666666666663,
+      "y": 104
+    }
+  },
+  {
+    "id": "tf_ground_unit_some",
+    "sidc": "10061000001211000000",
+    "options": {
+      "uniqueDesignation": "2",
+      "higherFormation": "41 ŞB",
+      "speed": "30"
+    },
+    "description": "Text fields: hostile unit, three fields, Turkish characters",
+    "valid": true,
+    "width": 375.33333333333326,
+    "height": 188,
+    "anchor": {
+      "x": 146.66666666666666,
+      "y": 76
+    }
+  },
+  {
+    "id": "tf_ground_equipment",
+    "sidc": "10061500001101000000",
+    "options": {
+      "type": "T-72",
+      "country": "XX",
+      "additionalInformation": "DMG",
+      "equipmentTeardownTime": "10",
+      "commonIdentifier": "TANK",
+      "uniqueDesignation": "E1"
+    },
+    "description": "Text fields: hostile land equipment",
+    "valid": true,
+    "width": 588,
+    "height": 180,
+    "anchor": {
+      "x": 324,
+      "y": 104
+    }
+  },
+  {
+    "id": "tf_air",
+    "sidc": "10030100001101000000",
+    "options": {
+      "uniqueDesignation": "VIPER 1",
+      "iffSif": "M3 4421",
+      "type": "F-16",
+      "speed": "450",
+      "altitudeDepth": "FL250",
+      "staffComments": "CAP",
+      "additionalInformation": "2 SHIPS"
+    },
+    "description": "Text fields: friendly air track",
+    "valid": true,
+    "width": 420.66666666666674,
+    "height": 216,
+    "anchor": {
+      "x": 59,
+      "y": 104
+    }
+  },
+  {
+    "id": "tf_sea",
+    "sidc": "10043000001201000000",
+    "options": {
+      "uniqueDesignation": "TCG X",
+      "type": "FFG",
+      "iffSif": "M1 77",
+      "staffComments": "PATROL",
+      "location": "BOSPHORUS",
+      "speed": "12 KT",
+      "guardedUnit": "G",
+      "specialDesignator": "SD"
+    },
+    "description": "Text fields: neutral sea surface",
+    "valid": true,
+    "width": 692.6666666666665,
+    "height": 216,
+    "anchor": {
+      "x": 189.66666666666663,
+      "y": 104
+    }
+  },
+  {
+    "id": "tf_subsurface",
+    "sidc": "10013500001101000000",
+    "options": {
+      "uniqueDesignation": "U1",
+      "type": "SSK",
+      "altitudeDepth": "50 M",
+      "staffComments": "SC",
+      "additionalInformation": "AI",
+      "specialDesignator": "SD"
+    },
+    "description": "Text fields: unknown subsurface",
+    "valid": true,
+    "width": 362,
+    "height": 216,
+    "anchor": {
+      "x": 161.66666666666666,
+      "y": 104
+    }
+  },
+  {
+    "id": "tf_hq",
+    "sidc": "10031002001211000000",
+    "options": {
+      "headquartersElement": "TOC",
+      "specialHeadquarters": "MAIN",
+      "uniqueDesignation": "1",
+      "higherFormation": "2"
+    },
+    "description": "Text fields: headquarters element and special HQ",
+    "valid": true,
+    "width": 248.66666666666663,
+    "height": 208,
+    "anchor": {
+      "x": 49.33333333333333,
+      "y": 204
+    }
+  },
+  {
+    "id": "tf_quantity_short",
+    "sidc": "10031000001211000000",
+    "options": {
+      "quantity": "200",
+      "specialHeadquarters": "XY"
+    },
+    "description": "Text fields: quantity and special HQ (3 letters size)",
+    "valid": true,
+    "width": 158,
+    "height": 158,
+    "anchor": {
+      "x": 79,
+      "y": 104
+    }
+  },
+  {
+    "id": "tf_background",
+    "sidc": "10031000001211000000",
+    "options": {
+      "uniqueDesignation": "A",
+      "higherFormation": "B",
+      "dtg": "C",
+      "staffComments": "D",
+      "infoBackground": "rgb(255,255,200)"
+    },
+    "description": "Text fields: background boxes",
+    "valid": true,
+    "width": 302,
+    "height": 176,
+    "anchor": {
+      "x": 151,
+      "y": 104
+    }
+  },
+  {
+    "id": "tf_color_outline",
+    "sidc": "10061000001211000000",
+    "options": {
+      "uniqueDesignation": "RED 1",
+      "speed": "20",
+      "infoColor": "rgb(0,0,255)",
+      "outlineWidth": 3,
+      "outlineColor": "rgb(255,255,255)"
+    },
+    "description": "Text fields: info color and outline",
+    "valid": true,
+    "width": 311.3333333333333,
+    "height": 194,
+    "anchor": {
+      "x": 232.33333333333331,
+      "y": 79
+    }
+  },
+  {
+    "id": "tf_info_outline",
+    "sidc": "10031000001211000000",
+    "options": {
+      "uniqueDesignation": "X",
+      "infoOutlineWidth": 4,
+      "infoOutlineColor": "rgb(0,0,0)",
+      "infoSize": 50
+    },
+    "description": "Text fields: info outline width and size",
+    "valid": true,
+    "width": 216.33333333333337,
+    "height": 143,
+    "anchor": {
+      "x": 137.33333333333334,
+      "y": 54
+    }
+  },
+  {
+    "id": "tf_fields_off",
+    "sidc": "10031000001211000000",
+    "options": {
+      "uniqueDesignation": "HIDDEN",
+      "infoFields": false
+    },
+    "description": "Text fields: infoFields false",
+    "valid": true,
+    "width": 158,
+    "height": 108,
+    "anchor": {
+      "x": 79,
+      "y": 54
+    }
+  },
+  {
+    "id": "tf_activity",
+    "sidc": "10034000001100000000",
+    "options": {
+      "country": "TR",
+      "uniqueDesignation": "ACT"
+    },
+    "description": "Text fields: activity with country",
+    "valid": true,
+    "width": 348.66666666666663,
+    "height": 176,
+    "anchor": {
+      "x": 189.66666666666663,
+      "y": 104
+    }
+  },
+  {
+    "id": "dir_ground",
+    "sidc": "10031000001211000000",
+    "options": {
+      "direction": 45
+    },
+    "description": "Direction of movement: ground unit",
+    "valid": true,
+    "width": 158,
+    "height": 229.17514421272202,
+    "anchor": {
+      "x": 79,
+      "y": 71.17514421272202
+    }
+  },
+  {
+    "id": "dir_ground_hq",
+    "sidc": "10031002001211000000",
+    "options": {
+      "direction": 300
+    },
+    "description": "Direction of movement: ground headquarters",
+    "valid": true,
+    "width": 240.27241335952166,
+    "height": 212,
+    "anchor": {
+      "x": 86.27241335952166,
+      "y": 204
+    }
+  },
+  {
+    "id": "dir_air",
+    "sidc": "10030100001101000000",
+    "options": {
+      "direction": 270
+    },
+    "description": "Direction of movement: air track",
+    "valid": true,
+    "width": 158,
+    "height": 232,
+    "anchor": {
+      "x": 99,
+      "y": 74
+    }
+  },
+  {
+    "id": "dir_sea_outline",
+    "sidc": "10043000001201000000",
+    "options": {
+      "direction": 135,
+      "outlineWidth": 4
+    },
+    "description": "Direction of movement with outline",
+    "valid": true,
+    "width": 138.17514421272202,
+    "height": 297.175144212722,
+    "anchor": {
+      "x": 63,
+      "y": 63
+    }
+  },
+  {
+    "id": "dir_speed_leader",
+    "sidc": "10061000001211000000",
+    "options": {
+      "direction": 30,
+      "speedLeader": 60
+    },
+    "description": "Speed leader",
+    "valid": true,
+    "width": 152,
+    "height": 152,
+    "anchor": {
+      "x": 76,
+      "y": 76
+    }
+  },
+  {
+    "id": "dir_speed_leader_size",
+    "sidc": "10030100001101000000",
+    "options": {
+      "direction": 200,
+      "speedLeader": 40,
+      "size": 50,
+      "outlineWidth": 2
+    },
+    "description": "Speed leader, size 50, outline",
+    "valid": true,
+    "width": 61,
+    "height": 78.58770483143634,
+    "anchor": {
+      "x": 30.5,
+      "y": 38
+    }
+  },
+  {
+    "id": "tf_dir_combined",
+    "sidc": "10061000001211000000",
+    "options": {
+      "direction": 90,
+      "uniqueDesignation": "C/2",
+      "speed": "40",
+      "quantity": "4"
+    },
+    "description": "Text fields and direction together",
+    "valid": true,
+    "width": 265.66666666666663,
+    "height": 306,
+    "anchor": {
+      "x": 166.66666666666663,
+      "y": 126
+    }
   }
 ]

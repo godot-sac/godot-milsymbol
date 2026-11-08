@@ -7,7 +7,8 @@ extends RefCounted
 ##
 ## Port of milsymbol 3.0.5 (src/ms/symbol/setoptions.js and the symbol parts in src/symbolfunctions/).
 ## Implemented parts: frame (base geometry), icon, modifiers (HQ, task force, installation, feint/dummy,
-## echelon, mobility, leadership), status (condition bar) and affiliation/dimension marks (exercise, simulation).
+## echelon, mobility, leadership), status (condition bar), affiliation/dimension marks (exercise, simulation),
+## text amplifier fields and the direction of movement indicator / speed leader (MilSymbolAmplifiers).
 
 const DATA_DIR := "res://addons/milsymbol/data/"
 
@@ -25,6 +26,13 @@ const STYLE_DEFAULTS := {
 	"hqStaffLength": 0,
 	"icon": true,
 	"iconColor": "",
+	"infoBackground": "",
+	"infoBackgroundFrame": "",
+	"infoColor": "",
+	"infoFields": true,
+	"infoOutlineColor": "rgb(239, 239, 239)",
+	"infoOutlineWidth": false,
+	"infoSize": 40.0,
 	"modifierColor": "",
 	"monoColor": "",
 	"outlineColor": "rgb(239, 239, 239)",
@@ -170,7 +178,7 @@ static func render(sidc: String, options: Dictionary = {}) -> MilSymbolRender:
 			style[key] = options[key]
 		else:
 			symbol_options[key] = options[key]
-	for key in ["fillOpacity", "outlineWidth", "padding", "size", "strokeWidth", "hqStaffLength"]:
+	for key in ["fillOpacity", "outlineWidth", "padding", "size", "strokeWidth", "hqStaffLength", "infoSize"]:
 		style[key] = float(style[key])
 
 	var input_sidc := sidc
@@ -193,7 +201,9 @@ static func render(sidc: String, options: Dictionary = {}) -> MilSymbolRender:
 	var bbox := {"x1": 100.0, "y1": 100.0, "x2": 100.0, "y2": 100.0}
 	# Symbol parts in milsymbol's order: pre is drawn underneath everything so far, post on top.
 	# Each part sees the bbox merged from the parts before it (mobility needs it).
-	for part in ["base_geometry", "icon", "modifier", "status", "affiliation_dimension"]:
+	var letter_sidc := MilSymbolLegacy.is_letter_sidc(input_sidc)
+	for part in ["base_geometry", "icon", "modifier", "status", "affiliation_dimension", "text_fields",
+			"direction_arrow"]:
 		var m: Dictionary
 		match part:
 			"base_geometry":
@@ -206,6 +216,10 @@ static func render(sidc: String, options: Dictionary = {}) -> MilSymbolRender:
 				m = _part_status(metadata, style, colors, symbol_options)
 			"affiliation_dimension":
 				m = _part_affiliation_dimension(metadata, style, colors)
+			"text_fields":
+				m = MilSymbolAmplifiers.text_fields(metadata, style, colors, symbol_options, letter_sidc)
+			"direction_arrow":
+				m = MilSymbolAmplifiers.direction_arrow(metadata, style, colors, symbol_options, bbox)
 		var pre: Array = m.pre
 		var post: Array = m.post
 		if not pre.is_empty():

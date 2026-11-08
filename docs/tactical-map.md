@@ -42,6 +42,7 @@ map.selection_changed.connect(func(ids: Array) -> void: print(ids))
 | `add_unit(id, sidc, latitude, longitude, label = "", layer = "default")` | Adds or replaces. `id` is any Dictionary key (int, String, ...). |
 | `move_unit(id, latitude, longitude)` | Cheap: updates one MultiMesh instance. |
 | `set_unit_sidc(id, sidc)`, `set_unit_label(id, label)`, `remove_unit(id)`, `clear_units()` | |
+| `set_unit_amplifiers(id, amplifiers)`, `get_unit_amplifiers(id)` | Text fields and direction of movement ([amplifiers](amplifiers.md)). Each distinct set is a new atlas entry: not for values that change every frame. |
 | `get_unit(id) -> Dictionary`, `has_unit(id)`, `get_unit_ids()`, `get_unit_count()` | |
 | `unit_at(position)` | Topmost unit under a screen position, or null. |
 | `select_units(ids, add = false)`, `get_selected_units()` | |

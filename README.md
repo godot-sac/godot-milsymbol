@@ -12,6 +12,9 @@ Part of [Godot SAC](https://github.com/godot-sac): stand-alone add-ons for terra
 - **Point symbols** from number based SIDCs (20 digits): units, equipment, installations, activities, point
   control measures and the other symbol sets milsymbol supports, with frames, icons, colour modes and amplifiers
   (echelon, headquarters, task force, feint / dummy, mobility, condition, exercise / simulation).
+- **Text amplifier fields** around point symbols (unique designation, higher formation, speed, DTG, ... in
+  milsymbol's layout for land, air, sea and subsurface) and the **direction of movement** arrow or speed leader
+  ([docs/amplifiers.md](docs/amplifiers.md)).
 - **Multipoint control measures** (tactical graphics): boundaries, phase lines, LD, FLOT, AO / NAI / TAI /
   assembly area / objective / engagement area, Axis of Advance, Direction of Attack, FSCL / CFL / NFL / RFL,
   FFA / NFA / RFA, obstacle lines and zones, minefields, MSR / ASR, air corridors. Drawn on any `CanvasItem` or
@@ -44,10 +47,10 @@ for a few symbols looks different from the 2525C one.
 version digits are drawn with the 2525D tables. **APP-6(E)** (in effect since 2025-10-16) is not verified: none
 of the data sources used here has an APP-6(E) table, so APP-6(E) SIDCs are drawn as 2525E / APP-6D symbols.
 
-Not supported: letter based APP-6A/B and 2525B SIDCs (2525B codes that 2525C kept are converted); text
-amplifier fields around point symbols (unique designation, higher formation, ...); the direction of movement
-arrow; meteorological and oceanographic symbol sets (45–47); mission task graphics and maritime multipoint
-graphics beyond the generic depiction.
+Not supported: letter based APP-6A/B and 2525B SIDCs (2525B codes that 2525C kept are converted); country
+flags, the engagement bar and stack extension of milsymbol's optional packages; meteorological and
+oceanographic symbol sets (45–47); mission task graphics and maritime multipoint graphics beyond the generic
+depiction.
 
 ## Requirements
 - Godot 4.7.x, Windows or Linux tested; other versions and platforms are untested
@@ -85,6 +88,13 @@ var render := MilSymbol.render("10061000001211000000")  # svg, size, anchor, met
 MilSymbol.save_png("SFGPUCI----D---", "user://platoon.png", {"size": 80})  # 2525C letter SIDC
 print(MilSymbolLegacy.to_number_sidc("SFGPUCI----D---"))  # 10031000141211000000
 ```
+Text fields and the direction of movement are options too; nodes take them in `amplifiers`, the map in
+`set_unit_amplifiers()` ([docs/amplifiers.md](docs/amplifiers.md)):
+
+```gdscript
+unit.amplifiers = {"uniqueDesignation": "A/1-32", "higherFormation": "3 BDE", "direction": 45.0}
+```
+
 Option names follow milsymbol (`size`, `colorMode`, `fill`, `frame`, `monoColor`, `outlineWidth`,
 `standard`, ...). Godot's SVG loader does not draw `<text>`, so labels are drawn as outlines from bundled
 Arimo glyph data (`textMode: "path"`, default); `textMode: "svg"` writes `<text>` like milsymbol.
@@ -115,7 +125,7 @@ API, coordinates and performance: [docs/tactical-map.md](docs/tactical-map.md).
 ## Demos
 Open the project in Godot and press F5 (`demo/main.tscn`). Tabs:
 - **Tactical map**: a fictional brigade attack with units and control measures. Keys: G grid, 1–4 layers,
-  M movement, N 5,000-unit stress test, F fit, L labels, D light / dark, F12 screenshot.
+  M movement, N 5,000-unit stress test, F fit, A text amplifiers, L labels, D light / dark, F12 screenshot.
 - **Frames**, **Icons**: frame and icon browsers.
 - **Sprites 2D**, **Map 3D**: `MilSymbolSprite2D` / `MilSymbolSprite3D` scenes.
 - **Control measures**: every control measure with its own geometry; drag the control points.
@@ -125,6 +135,7 @@ Open the project in Godot and press F5 (`demo/main.tscn`). Tabs:
 ## Documentation
 - [docs/getting-started.md](docs/getting-started.md): first map in 15 minutes
 - [docs/tactical-map.md](docs/tactical-map.md): `TacticalMap2D`
+- [docs/amplifiers.md](docs/amplifiers.md): text amplifier fields and direction of movement
 - [docs/control-measures.md](docs/control-measures.md): multipoint control measures
 - [docs/coverage.md](docs/coverage.md): point symbol coverage per standard and symbol set
 - [docs/compatibility.md](docs/compatibility.md): tested Godot versions and platforms

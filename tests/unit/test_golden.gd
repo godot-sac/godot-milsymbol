@@ -43,7 +43,11 @@ func test_every_golden_svg_rasterizes_at_manifest_size() -> void:
 
 func test_rasterized_symbols_are_not_blank() -> void:
 	for entry in _manifest:
-		var image := SvgCompare.rasterize(_read_svg(entry.id))
+		var svg := _read_svg(entry.id)
+		# Godot's SVG loader skips <text>: symbols with text fields are mostly empty space when rasterized.
+		if svg.contains("milsymbol-textfields"):
+			continue
+		var image := SvgCompare.rasterize(svg)
 		if image == null:
 			continue
 		var used := image.get_used_rect()

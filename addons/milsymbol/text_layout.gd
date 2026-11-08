@@ -56,8 +56,9 @@ static func to_instruction(text_instruction: Dictionary) -> Dictionary:
 		style["stroke"] = stroke
 		if text_instruction.has("strokewidth"):
 			style["strokewidth"] = text_instruction["strokewidth"]
-		# The scale group would scale the stroke width, so compensate.
-		style["non_scaling_stroke"] = 1.0 / factor
+	# The scale group would scale any stroke width, so compensate. Also needed without a stroke: an outline
+	# (MilSymbol._outline) copies these paths and gives them one.
+	style["non_scaling_stroke"] = 1.0 / factor
 
 	var glyphs: Dictionary = font.glyphs
 	var kerning: Dictionary = font.kerning

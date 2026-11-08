@@ -2,6 +2,20 @@
 
 All notable changes to this project are documented here. Versions follow [semver](https://semver.org/).
 
+## [Unreleased]
+### Added
+- Text amplifier fields around point symbols (milsymbol's `textfields.js`: quantity, reinforced / reduced,
+  staff comments, additional information, evaluation rating, combat effectiveness, signature equipment,
+  higher formation, hostile, IFF / SIF, unique designation, type, DTG, altitude / depth, location, speed,
+  headquarters element, special headquarters, ...) with `infoFields`, `infoSize`, `infoColor`,
+  `infoBackground`, `infoOutlineWidth` and `infoOutlineColor`; the direction of movement indicator and speed
+  leader (`direction`, `speedLeader`). 20 new golden symbols, identical to milsymbol.
+- `amplifiers` on `MilSymbolSprite2D`, `MilSymbolSprite3D` and `MilSymbolTextureRect`;
+  `TacticalMap2D.set_unit_amplifiers()` / `get_unit_amplifiers()`; the tactical map demo shows them (A).
+
+### Fixed
+- Outlines of text drawn as glyph outlines (`textMode: "path"`) were scaled down to almost nothing.
+
 ## [0.1.0] - 2026-11-08
 ### Added
 - Number-based SIDC parsing (MIL-STD-2525D/E, APP-6D) and frames for every dimension, in all standard identities,
