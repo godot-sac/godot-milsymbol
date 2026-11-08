@@ -11,7 +11,6 @@ Windows and Linux ([compatibility](docs/compatibility.md)).
   direction of movement arrow.
 - Own geometry for more multipoint control measures (today 76 of 271 2525D codes; the rest are drawn as a
   generic line or area): mission task graphics, remaining fire support and protection graphics.
-- Run CI on GitHub (Windows and Linux) and keep the compatibility table up to date from it.
 - Try Godot 4.3–4.6 and the Compatibility / Mobile renderers; macOS.
 - Submit the add-on to the Godot Asset Library.
 

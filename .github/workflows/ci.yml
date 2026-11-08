@@ -1,6 +1,5 @@
 # Runs the Godot (GUT) tests on Windows and Linux, then packs addons/milsymbol as a zip and checks it in an empty
-# project. On a version tag (v0.1.0) the zip is attached to a draft GitHub release of that tag (published by hand
-# after the README GIF is uploaded, see docs/media.md).
+# project. On a version tag (v0.1.0) the zip is attached to a draft GitHub release of that tag (published by hand).
 name: CI
 
 on:
@@ -33,7 +32,7 @@ jobs:
       run:
         shell: bash
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Download Godot
         run: |
           Z="${{ matrix.godot_zip }}"; R="--retry 5 --retry-all-errors --retry-delay 10"; curl -sSfL $R -o godot.zip "https://downloads.godotengine.org/?version=${GODOT_VERSION}&flavor=stable&slug=${Z#Godot_v${GODOT_VERSION}-stable_}" || curl -sSfL $R -o godot.zip "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/$Z"
@@ -52,7 +51,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Download Godot
         run: |
           Z="Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"; R="--retry 5 --retry-all-errors --retry-delay 10"; curl -sSfL $R -o godot.zip "https://downloads.godotengine.org/?version=${GODOT_VERSION}&flavor=stable&slug=${Z#Godot_v${GODOT_VERSION}-stable_}" || curl -sSfL $R -o godot.zip "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/$Z"
@@ -70,7 +69,7 @@ jobs:
           echo "PACKAGE=$(ls build/package/godot-milsymbol-*.zip)" >> "$GITHUB_ENV"
       - name: Check the package in an empty project
         run: python3 tools/check_package.py "$PACKAGE" --godot "$GODOT"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: godot-milsymbol-addon
           path: build/package/*.zip
