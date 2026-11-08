@@ -2,7 +2,7 @@
 
 All notable changes to this project are documented here. Versions follow [semver](https://semver.org/).
 
-## [0.1.0] - Unreleased
+## [0.1.0] - 2026-11-08
 ### Added
 - Number-based SIDC parsing (MIL-STD-2525D/E, APP-6D) and frames for every dimension, in all standard identities,
   colour modes, fill and outline styles.
