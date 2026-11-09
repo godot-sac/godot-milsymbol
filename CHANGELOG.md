@@ -3,6 +3,8 @@
 All notable changes to this project are documented here. Versions follow [semver](https://semver.org/).
 
 ## [Unreleased]
+
+## [0.2.0] - 2026-11-09
 ### Added
 - Text amplifier fields around point symbols (milsymbol's `textfields.js`: quantity, reinforced / reduced,
   staff comments, additional information, evaluation rating, combat effectiveness, signature equipment,

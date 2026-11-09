@@ -3,7 +3,7 @@
 Military symbols (MIL-STD-2525D/E, APP-6D) and tactical graphics for Godot 4, with a 2D tactical map node.
 The point symbol renderer is a GDScript port of [milsymbol](https://github.com/spatialillusions/milsymbol).
 
-**Status:** 0.1.0, the first release. Tested with Godot 4.7.2 on Windows and Linux; plans in [ROADMAP.md](ROADMAP.md).
+**Status:** 0.2.0. Tested with Godot 4.7.2 on Windows and Linux; plans in [ROADMAP.md](ROADMAP.md).
 Part of [Godot SAC](https://github.com/godot-sac): stand-alone add-ons for terrain, military symbology, DIS and flight dynamics that also work together.
 
 ![Tactical map demo: unit symbols and control measures on a map](docs/images/tactical-map.png)

@@ -1,12 +1,12 @@
 # Roadmap
 
 ## Status
-0.1.0 is the first release. Point symbols cover every symbol set milsymbol 3.0.5 supports (MIL-STD-2525D/E,
+0.2.0 (2026-11-09) adds the text amplifier fields and the direction of movement indicator; 0.1.0 was the first release. Point symbols cover every symbol set milsymbol 3.0.5 supports (MIL-STD-2525D/E,
 APP-6D) and match milsymbol's output on its own test lists; multipoint control measures, `TacticalMap2D`, the
 symbol nodes, 2525C letter SIDC conversion and SVG / PNG export are in place. Tested with Godot 4.7.2 on
 Windows and Linux ([compatibility](docs/compatibility.md)).
 
-## Next (0.2)
+## Next
 - Own geometry for more multipoint control measures (today 76 of 271 2525D codes; the rest are drawn as a
   generic line or area): mission task graphics, remaining fire support and protection graphics.
 - Try the Compatibility / Mobile renderers and macOS.
