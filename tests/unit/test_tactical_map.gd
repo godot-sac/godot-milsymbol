@@ -241,3 +241,46 @@ func test_invalid_graphics_are_not_counted_as_drawn() -> void:
 	await wait_frames(2)
 	assert_eq(_map.drawn_graphics, 1)
 	assert_false(_map.get_graphic_shape("one point").valid)
+
+
+func _label_rects(ids: Array) -> Dictionary:
+	var items: Array = []
+	for id in ids:
+		var u: Dictionary = _map._units[id]
+		items.append([id, u, _map.lat_lon_to_screen(u.latitude, u.longitude)])
+	var font := _map.get_theme_default_font()
+	var rects := {}
+	for placed in _map._place_labels(items, font):
+		var text_size := font.get_string_size(placed[1], HORIZONTAL_ALIGNMENT_LEFT, -1, TacticalMap2D.LABEL_FONT_SIZE)
+		rects[placed[1]] = Rect2(placed[0] - Vector2(0, font.get_ascent(TacticalMap2D.LABEL_FONT_SIZE)), text_size)
+	return rects
+
+
+func test_labels_of_close_units_do_not_overlap() -> void:
+	# Five units a few pixels apart in a row; every label would sit at the same place under the symbols.
+	var ids: Array = []
+	for i in 5:
+		var id := "u%d" % i
+		_map.add_unit(id, FRIEND_INF, 39.93, 32.86 + i * 0.00005, "LABEL-%d" % i)
+		ids.append(id)
+	var rects := _label_rects(ids)
+	assert_gt(rects.size(), 1, "more than one label is drawn")
+	var list: Array = rects.values()
+	for i in list.size():
+		for j in range(i + 1, list.size()):
+			assert_false((list[i] as Rect2).intersects(list[j]), "labels %d and %d overlap" % [i, j])
+
+
+func test_a_lone_label_sits_under_its_symbol() -> void:
+	_map.add_unit("a", FRIEND_INF, 39.93, 32.86, "ALONE")
+	var p := _map.lat_lon_to_screen(39.93, 32.86)
+	var rect: Rect2 = _label_rects(["a"])["ALONE"]
+	assert_gt(rect.position.y, p.y, "below the anchor")
+	assert_almost_eq(rect.get_center().x, p.x, 1.0, "centred")
+
+
+func test_the_selected_unit_keeps_its_label() -> void:
+	for i in 6:
+		_map.add_unit("u%d" % i, FRIEND_INF, 39.93, 32.86 + i * 0.00002, "UNIT-%d" % i)
+	_map.select_units(["u5"])
+	assert_true(_label_rects(["u0", "u1", "u2", "u3", "u4", "u5"]).has("UNIT-5"))

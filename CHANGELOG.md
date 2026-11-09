@@ -3,6 +3,10 @@
 All notable changes to this project are documented here. Versions follow [semver](https://semver.org/).
 
 ## [Unreleased]
+### Fixed
+- `TacticalMap2D`: labels of units close together no longer overlap. Each label tries below, above, right and
+  left of its symbol (a place clear of other symbols first) and is left out when all of them overlap a label;
+  selected and hovered units are labelled first.
 
 ## [0.2.0] - 2026-11-09
 ### Added

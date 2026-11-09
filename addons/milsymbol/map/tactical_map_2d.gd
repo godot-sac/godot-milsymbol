@@ -23,6 +23,7 @@ signal view_changed
 const EARTH_RADIUS := 6378137.0
 const MAX_LATITUDE := 85.0511287798
 const DEFAULT_LAYER := "default"
+const LABEL_FONT_SIZE := 11
 ## The plane origin follows the view when the centre is farther than this (metres) from it, so that 32-bit
 ## Vector2 plane positions stay precise anywhere on Earth.
 const REORIGIN_DISTANCE := 1000000.0
@@ -587,11 +588,11 @@ func _draw_overlay() -> void:
 			_overlay.draw_rect(Rect2(p + bounds.position, bounds.size).grow(3.0), selection_color, false, 2.0)
 		elif _hovered == item[0]:
 			_overlay.draw_rect(Rect2(p + bounds.position, bounds.size).grow(3.0), Color(selection_color, 0.5), false, 1.0)
-		if labels and unit.label != "":
-			var y := p.y + bounds.end.y + 12.0
-			_overlay.draw_string_outline(font, Vector2(p.x - 80, y), unit.label, HORIZONTAL_ALIGNMENT_CENTER, 160, 11,
+	if labels:
+		for placed in _place_labels(visible_units, font):
+			_overlay.draw_string_outline(font, placed[0], placed[1], HORIZONTAL_ALIGNMENT_LEFT, -1, LABEL_FONT_SIZE,
 					3, Color(background_color, 0.8))
-			_overlay.draw_string(font, Vector2(p.x - 80, y), unit.label, HORIZONTAL_ALIGNMENT_CENTER, 160, 11, text_color)
+			_overlay.draw_string(font, placed[0], placed[1], HORIZONTAL_ALIGNMENT_LEFT, -1, LABEL_FONT_SIZE, text_color)
 	if _box_selecting:
 		var box := Rect2(_press_position, _drag_current - _press_position).abs()
 		_overlay.draw_rect(box, Color(selection_color, 0.12))
@@ -603,6 +604,63 @@ func _draw_overlay() -> void:
 				_format_coordinate(_cursor_lat_lon[1], "E", "W")]
 		_overlay.draw_string(font, Vector2(size.x - 230, size.y - 10), text, HORIZONTAL_ALIGNMENT_RIGHT, 220, 12,
 				text_color)
+
+
+## Places unit labels so that they do not overlap each other: [[baseline position, text], ...].
+## `items` are [id, unit, screen position]. Selected and hovered units go first; each label tries below, above,
+## right and left of its symbol, preferring a place that covers no other symbol, and is left out when every place
+## overlaps a label already placed.
+func _place_labels(items: Array, font: Font) -> Array:
+	var ordered: Array = []
+	for item in items:
+		if item[1].label != "":
+			ordered.append(item)
+	var rank := func(item: Array) -> int:
+		return 0 if _selected.has(item[0]) else (1 if _hovered == item[0] else 2)
+	# Stable: sort_custom is not, so ties keep their order through the index.
+	for i in ordered.size():
+		ordered[i] = [rank.call(ordered[i]), i, ordered[i]]
+	ordered.sort_custom(func(a: Array, b: Array) -> bool: return a[0] < b[0] or (a[0] == b[0] and a[1] < b[1]))
+	var symbols: Array[Rect2] = []
+	for item in items:
+		var bounds: Rect2 = item[1].entry.get("bounds", Rect2(-8, -8, 16, 16))
+		symbols.append(Rect2(item[2] + bounds.position, bounds.size))
+	var ascent := font.get_ascent(LABEL_FONT_SIZE)
+	var placed: Array[Rect2] = []
+	var out: Array = []
+	for entry in ordered:
+		var item: Array = entry[2]
+		var p: Vector2 = item[2]
+		var bounds: Rect2 = item[1].entry.get("bounds", Rect2(-8, -8, 16, 16))
+		var text: String = item[1].label
+		var text_size := font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, LABEL_FONT_SIZE)
+		var own := Rect2(p + bounds.position, bounds.size)
+		# Top-left corners: below (the usual place), above, right, left.
+		var corners := [
+			Vector2(p.x - text_size.x * 0.5, own.end.y + 1.0),
+			Vector2(p.x - text_size.x * 0.5, own.position.y - text_size.y - 1.0),
+			Vector2(own.end.x + 3.0, p.y - text_size.y * 0.5),
+			Vector2(own.position.x - text_size.x - 3.0, p.y - text_size.y * 0.5),
+		]
+		var fallback := Vector2.INF
+		var chosen := Vector2.INF
+		for corner: Vector2 in corners:
+			var rect := Rect2(corner, text_size)
+			if placed.any(func(r: Rect2) -> bool: return r.intersects(rect)):
+				continue
+			if symbols.any(func(r: Rect2) -> bool: return r != own and r.intersects(rect)):
+				if fallback == Vector2.INF:
+					fallback = corner
+				continue
+			chosen = corner
+			break
+		if chosen == Vector2.INF:
+			chosen = fallback
+		if chosen == Vector2.INF:
+			continue
+		placed.append(Rect2(chosen, text_size))
+		out.append([chosen + Vector2(0, ascent), text])
+	return out
 
 
 func _draw_scale_bar(font: Font) -> void:
