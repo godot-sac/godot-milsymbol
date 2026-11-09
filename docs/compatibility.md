@@ -10,10 +10,13 @@ package check below).
 | 0.1.0 | 4.7.2 stable | Linux: Ubuntu 24.04 in WSL2, x86_64 | ✓ 97/97 | ✓ | ✓ every demo scene headless; getting-started guide windowed under WSLg (software Vulkan) | 2026-11-03 |
 | 0.2.0 | 4.7.2 stable | Windows 11, x86_64 (Vulkan, NVIDIA) | ✓ 105/105 | ✓ | ✓ tactical map demo with amplifiers (A) | 2026-11-08 |
 | 0.1.0, 0.2.0 | 4.7.2 stable | Windows (`windows-latest`), Linux (`ubuntu-22.04`) in CI | ✓ | ✓ (Linux) | – | 2026-11-09 |
+| 0.1.0 | 4.7.2 release template | exported game, Windows 11 and Linux (WSL2) | – | – | ✓ `TacticalMap2D` in godot-sim-demo's exported showcase (`--check 480`) | 2026-11-09 |
 | any | 4.3 – 4.6 | any | not tested | not tested | not tested | – |
 | any | any | macOS, Android, iOS, Web | not tested | not tested | not tested | – |
 
 Notes:
+- Exported games: add `*.json` to the export's include filter; the symbol data in `addons/milsymbol/data/` is
+  read as files (godot-sim-demo's `docs/export.md`).
 - The add-on is pure GDScript with JSON data files; it has no native libraries, so there is nothing
   platform-specific to build. Rendering uses `Image.load_svg_from_string()`, `MultiMeshInstance2D` and a small
   canvas shader, which exist in every Godot 4 version, but the code uses 4.x syntax and APIs added up to 4.7
